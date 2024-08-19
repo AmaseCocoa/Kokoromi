@@ -1,0 +1,57 @@
+{% extends "base.html" %}
+
+{% block title %}記事一覧{% endblock %}
+
+{% block content %}
+<h1>記事一覧</h1>
+<table border="1" class="table">
+    <thead>
+        <tr>
+            <th>ID</th>
+            <th>タイトル</th>
+            <th>著者</th>
+            <th>投稿日</th>
+            <th>操作</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for article in articles %}
+            <tr>
+                <td>{{ article.id }}</td>
+                <td>{{ article.title }}</td>
+                <td>{{ find_author(article.authorId).name }}</td>
+                <td>{{ article.createdAt.strftime('%Y/%m/%d %H:%M') }}</td>
+                <td>
+                    <a href="/admin/articles/{{ article.id }}/edit" class="btn btn-primary btn-sm">編集</a>
+    <!--                <a href="/admin/articles/{{ article.id }}/delete" class="btn btn-primary btn-sm">削除</a> -->
+                </td>
+            </tr>
+        {% endfor %}
+    </tbody>
+</table>
+<nav>
+    <ul style="list-style: none; display: flex; gap: 5px;">
+        {% if page > 1 %}
+        <li><a href="/admin/articles?page={{ page-1 }}" class="btn btn-primary btn-sm">前へ</a></li>
+        {% endif %}
+        {% set start_page = ((page - 1) // 10) * 10 + 1 %}
+        {% set end_page = start_page + 9 %}
+        {% if start_page > 1 %}
+        <li><a href="/admin/articles?page={{ start_page - 1 }}" class="btn btn-primary btn-sm">...</a></li>
+        {% endif %}
+        {% for p in range(start_page, (end_page | min(total_pages)) + 1) %}
+        <li {% if p == page %}style="font-weight: bold;"{% endif %}>
+            <a href="/admin/articles?page={{ p }}" class="btn btn-primary btn-sm">{{ p }}</a>
+        </li>
+        {% endfor %}
+        {% if end_page < total_pages %}
+        <li><a href="/admin/articles?page={{ end_page + 1 }}" class="btn btn-primary btn-sm">...</a></li>
+        {% endif %}
+        {% if page < total_pages %}
+        <li><a href="/admin/articles?page={{ page+1 }}" class="btn btn-primary btn-sm">次へ</a></li>
+        {% endif %}
+    </ul>  
+</nav>
+<a href="/admin/articles/create" class="btn btn-primary btn-sm"><i class="bi bi-plus"></i>新規作成</a>
+
+{% endblock %}

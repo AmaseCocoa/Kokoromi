@@ -1,0 +1,31 @@
+{% extends "base.html" %}
+
+{% block title %}著者編集{% endblock %}
+
+{% block content %}
+    <h1>著者情報編集</h1>
+    {% if changed %}
+    <div class="alert alert-success" role="alert">
+        変更が完了しました。
+    </div>
+    {% endif %}
+    <form action="/admin/profile" method="post">
+        <div class="mb-3">
+            <label for="authorName" class="form-label">表示名</label>
+            <input type="text" class="form-control" id="authorName" name="name" value="{{ author.displayName }}" required>
+        </div>
+        <div class="mb-3">
+            <label for="authorEmail" class="form-label">メールアドレス</label>
+            <input type="email" class="form-control" id="authorEmail" name="mail" value="{{ author.mail }}" required>
+        </div>
+        <div class="mb-3">
+            <label for="authorDescription" class="form-label">Bio</label>
+            <textarea class="form-control" id="authorDescription" name="bio" rows="5">{{ author.description }}</textarea>
+        </div>
+        <div class="mb-3">
+            <label for="authorIcon" class="form-label">プロフィール画像URL</label>
+            <input type="url" class="form-control" id="authorIcon" name="authorIcon" value="{{ author.icon }}">
+        </div>
+        <button type="submit" class="btn btn-primary">保存</button>
+    </form>
+{% endblock %}

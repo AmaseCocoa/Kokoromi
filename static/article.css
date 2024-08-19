@@ -1,0 +1,37 @@
+.toc {
+    margin: 20px 0;
+    padding: 0;
+    list-style: none;
+}
+
+.toc ul {
+    padding-left: 20px; /* インデント */
+    list-style: none;
+}
+
+.toc li {
+    margin-bottom: 5px;
+}
+
+.toc a {
+    color: #007bff; /* Bootstrapのリンクカラー */
+    text-decoration: none;
+}
+
+.toc a:hover {
+    text-decoration: underline;
+}
+
+.toc li > ul {
+    margin-top: 5px;
+}
+
+.toc .active > a {
+    font-weight: bold;
+    color: #0056b3;
+}
+
+.toc a:focus {
+    outline: none;
+    box-shadow: none;
+}

@@ -1,0 +1,176 @@
+{% extends "base.html" %}
+
+{% block title %}設定{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <h2>設定</h2>
+    {% if changed %}
+    <div class="alert alert-success" role="alert">
+        設定の変更が完了しました。
+    </div>
+    {% endif %}
+    <form method="POST" action="/admin/settings">
+        <div class="card mb-4">
+            <div class="card-header">
+                サイト設定
+            </div>
+            <div class="card-body">
+                <div class="form-group mb-3">
+                    <label for="site_name">サイト名</label>
+                    <input type="text" class="form-control" id="site_name" name="site_name" required
+                        value="{{ settings.title }}">
+                </div>
+                <div class="form-group mb-3">
+                    <label for="site_description">サイト説明</label>
+                    <textarea class="form-control" id="site_description" name="site_description"
+                        rows="3">{{ settings.description }}</textarea>
+                </div>
+            </div>
+        </div>
+
+        <!-- セキュリティ設定 -->
+        <div class="card mb-4">
+            <div class="card-header">
+                セキュリティ設定
+            </div>
+            <div class="card-body">
+                <div class="form-group mb-3">
+                    <div class="form-check">
+                        <input class="form-check-input" type="checkbox" id="disable_ai_learning"
+                            name="disable_ai_learning" {% if settings.disallowAiLearning %}checked{% endif %}>
+                        <label class="form-check-label" for="disable_ai_learning">
+                            生成AIによる学習を拒否する
+                            <br>
+                            <small>robots.txtやnoaiフラグを利用することによって生成AIによる学習を拒否します。この要求に従うかはAI次第であるため、学習を完全に防止するものではありません。</small>
+                        </label>
+                    </div>
+                </div>
+                <div class="form-group mb-3">
+                    <div class="form-check">
+                        <input class="form-check-input" type="checkbox" id="hide_kokoromi_version"
+                            name="hide_kokoromi_version" {% if settings.hideKokoromiVersion %}checked{% endif %}>
+                        <label class="form-check-label" for="hide_kokoromi_version">
+                            Kokoromiバージョンを非表示にする
+                            <br>
+                            <small>htmlにKokoromiバージョンを表示しないようにします。</small>
+                        </label>
+                    </div>
+                </div>
+                <div class="form-group mb-3">
+                    <div class="form-check">
+                        <input class="form-check-input" type="checkbox" id="disable_search_indexing"
+                            name="disable_search_indexing" {% if settings.noindex %}checked{% endif %}>
+                        <label class="form-check-label" for="disable_search_indexing">
+                            クローラーによるインデックスを拒否する
+                            <br>
+                            <small>htmlにnoindexを付与してクローラーにページをインデックスしないように要求します。</small>
+                        </label>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Giscus設定 -->
+        <div class="card mb-4">
+            <div class="card-header">
+                Giscus
+            </div>
+            <div class="card-body">
+                <div class="form-group mb-3">
+                    <div class="form-check">
+                        <input class="form-check-input" type="checkbox" id="enable_giscus" name="enable_giscus" {% if
+                            settings.giscusEnabled %}checked{% endif %}>
+                        <label class="form-check-label" for="enable_giscus">
+                            Giscusを有効にする
+                        </label>
+                    </div>
+                </div>
+                <div class="form-group mb-3">
+                    <label for="giscusRepo">Giscusリポジトリ</label>
+                    <input type="text" class="form-control" id="giscusRepo" name="giscusRepo"
+                        value="{{ settings.giscusRepo }}">
+                </div>
+                <div class="form-group mb-3">
+                    <label for="giscusRepoId">GiscusリポジトリId</label>
+                    <input type="text" class="form-control" id="giscusRepoId" name="giscusRepoId"
+                        value="{{ settings.giscusRepoId }}">
+                </div>
+                <div class="form-group mb-3">
+                    <label for="giscusCategoryName">Giscusカテゴリ名</label>
+                    <input type="text" class="form-control" id="giscusCategoryName" name="giscusCategoryName"
+                        value="{{ settings.giscusCategoryName }}">
+                </div>
+                <div class="form-group mb-3">
+                    <label for="giscusCategoryId">GiscusカテゴリId</label>
+                    <input type="text" class="form-control" id="giscusCategoryId" name="giscusCategoryId"
+                        value="{{ settings.giscusCategoryId }}">
+                </div>
+                <div class="form-group mb-3">
+                    <label for="giscusThemeType">Giscusテーマ</label>
+                    <select name="giscusThemeType" id="giscusThemeType" class="form-select">
+                        <option {% if settings.giscusThemeType == "light" %}selected=""{% endif %} value="light">GitHub Light</option>
+                        <option {% if settings.giscusThemeType == "light_high_contrast" %}selected=""{% endif %} value="light_high_contrast">GitHub Light Contrast</option>
+                        <option {% if settings.giscusThemeType == "light_protanopia" %}selected=""{% endif %} value="light_protanopia">GitHub Light Protanopia &amp; Deuteranopia</option>
+                        <option {% if settings.giscusThemeType == "light_tritanopia" %}selected=""{% endif %} value="light_tritanopia">GitHub Light Tritanopia</option>
+                        <option {% if settings.giscusThemeType == "dark" %}selected=""{% endif %} value="dark">GitHub Dark</option>
+                        <option {% if settings.giscusThemeType == "dark_high_contrast" %}selected=""{% endif %} value="dark_high_contrast">GitHub Dark Contrast</option>
+                        <option {% if settings.giscusThemeType == "dark_protanopia" %}selected=""{% endif %} value="dark_protanopia">GitHub Dark Protanopia &amp; Deuteranopia</option>
+                        <option {% if settings.giscusThemeType == "dark_tritanopia" %}selected=""{% endif %} value="dark_tritanopia">GitHub Dark Tritanopia</option>
+                        <option {% if settings.giscusThemeType == "dark_dimmed" %}selected=""{% endif %} value="dark_dimmed">GitHub Dark Dimmed</option>
+                        <option {% if settings.giscusThemeType == "preferred_color_scheme" %}selected=""{% endif %} value="preferred_color_scheme">カラースキームに従う</option>
+                        <option {% if settings.giscusThemeType == "transparent_dark" %}selected=""{% endif %} value="transparent_dark">Transparent Dark</option>
+                        <option {% if settings.giscusThemeType == "noborder_light" %}selected=""{% endif %} value="noborder_light">NoBorder Light</option>
+                        <option {% if settings.giscusThemeType == "noborder_dark" %}selected=""{% endif %} value="noborder_dark">NoBorder Dark</option>
+                        <option {% if settings.giscusThemeType == "noborder_gray" %}selected=""{% endif %} value="noborder_gray">NoBorder Gray</option>
+                        <option {% if settings.giscusThemeType == "cobalt" %}selected=""{% endif %} value="cobalt">RStudio Cobalt</option>
+                        <option {% if settings.giscusThemeType == "purple_dark" %}selected=""{% endif %} value="purple_dark">Purple Dark</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+
+        <!-- その他の設定 -->
+        <div class="card mb-4">
+            <div class="card-header">
+                その他の設定
+            </div>
+            <div class="card-body">
+                <div class="form-group mb-3">
+                    <div class="form-check">
+                        <input class="form-check-input" type="checkbox" id="enable_activitypub"
+                            name="enable_activitypub" {% if settings.enableActivityPub %}checked{% endif %}>
+                        <label class="form-check-label" for="enable_activitypub">
+                            ActivityPubを有効にする (未実装)
+                            <br>
+                            <small>投稿通知をActivityPub (Misskey, Mastodon等)に投稿します。</small>
+                        </label>
+                    </div>
+                </div>
+                <div class="form-group mb-3">
+                    <div class="form-check">
+                        <input class="form-check-input" type="checkbox" id="showViewCounts"
+                            name="showViewCounts" {% if settings.showViewCounts %}checked{% endif %}>
+                        <label class="form-check-label" for="showViewCounts">
+                            閲覧数を表示する
+                            <br>
+                            <small>設定されていない場合も内部的にカウントされます。</small>
+                        </label>
+                    </div>
+                </div>
+                <div class="form-group mb-3">
+                    <label for="site_name">Adsense広告タグ</label>
+                    <input type="text" class="form-control" id="adsense" name="adsense" value="{{ settings.adsense }}">
+                </div>
+                <div class="form-group mb-3">
+                    <label for="site_name">Google AnalyticsトラッキングID</label>
+                    <input type="text" class="form-control" id="ga4TrackingId" name="ga4TrackingId"
+                        value="{{ settings.ga4TrackingId }}">
+                </div>
+            </div>
+        </div>
+
+        <button type="submit" class="btn btn-primary">保存</button>
+    </form>
+</div>
+{% endblock %}

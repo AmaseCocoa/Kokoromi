@@ -1,0 +1,13 @@
+.author-container {
+    display: flex;
+    gap: 20px; /* カードと記事リストの間のスペース */
+}
+
+.author-profile {
+    flex: 1; /* プロフィールカードの幅 */
+    max-width: 300px; /* 最大幅を設定 */
+}
+
+.author-articles {
+    flex: 2; /* 記事一覧の幅 */
+}

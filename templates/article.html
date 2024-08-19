@@ -1,0 +1,173 @@
+{% extends "base.html" %}
+
+{% block title %}{{ article.title }}{% endblock %}
+
+{% block head_prefix %}prefix="og: http://ogp.me/ns# fb: http://ogp.me/ns/fb# article: http://ogp.me/ns/website#"{% endblock %}
+
+{% block head %}
+<script src="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11.9.0/build/highlight.min.js"></script>
+<link rel="stylesheet"
+    href="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11.9.0/build/styles/tokyo-night-dark.min.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/luminous-lightbox@2.3.2/dist/luminous-basic.min.css">
+<link rel="stylesheet"
+    href="/static/article.css">
+<meta property="og:url" content="" />
+<meta property="og:type" content="article" />
+<meta property="og:title" content="{{ article.title }}" />
+<meta property="og:description" content="{{ excerpt }}" />
+<meta property="og:site_name" content="{{ settings.title }}" />
+<!-- <meta property="og:image" content=" サムネイル画像の URL" /> -->
+<style>
+    .post img.luminous-target {
+        max-width: 100%;
+        height: auto;
+        display: block;
+        margin: 0 auto;
+    }
+
+    /* pタグ内のem要素を中央寄せ */
+    p>em {
+        display: block;
+        text-align: center;
+        margin-top: 8px;
+        /* 画像との間に少し余白を追加 */
+    }
+
+    /* 画像を親要素の幅に収める */
+    .luminous img.luminous-target {
+        max-width: 100%;
+        height: auto;
+        display: block;
+        margin: 0 auto;
+        /* 中央揃えにしたい場合 */
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-8 offset-md-2">
+        <div class="post-meta mb-4">
+            <h1>{{ article.title }}</h1>
+            <div class="d-flex justify-content-between">
+                <div class="text-muted">
+                    <i class="bi bi-clock"></i> {{ article.createdAt.strftime('%Y/%m/%d %H:%M') }}{% if settings.showViewCounts %} <i class="bi bi-eye"></i> {{ article.viewCount }}{% endif %}
+                </div>
+            </div>
+        </div>
+
+        <article class="post">
+            {{ content | safe }}
+        </article>
+
+        <div class="share-buttons mt-5 text-center">
+            <h5>この記事をシェアする</h5>
+            <button class="btn" style="background-color:#000000;" onclick="shareOnTwitter()">
+                <i class="si si-x" style="color: #fff"></i>
+            </button>
+            <button class="btn" style="background-color:#1877F2;" onclick="shareOnFacebook()">
+                <i class="si si-facebook" style="color: #fff"></i>
+            </button>
+            <button class="btn" style="background-color:#0077B5;" onclick="shareOnLinkedIn()">
+                <i class="si si-linkedin" style="color: #fff"></i>
+            </button>
+            <button class="btn" style="background-color:#9FD709;" onclick="shareOnMisskey()">
+                <i class="si si-misskey" style="color: #fff"></i>
+            </button>
+            <button class="btn" style="background-color:#6364FF;" onclick="shareOnMastodon()">
+                <i class="si si-mastodon" style="color: #fff"></i>
+            </button>
+            <button class="btn" style="background-color:#0285FF;" onclick="shareOnBsky()">
+                <i class="si si-bluesky" style="color: #fff"></i>
+            </button>
+            <button class="btn" style="background-color:#000000;" onclick="shareOnBsky()">
+                <i class="si si-threads" style="color: #fff"></i>
+            </button>
+            <button class="btn" style="background-color:#00C300;" onclick="shareOnLINE()">
+                <i class="si si-line" style="color: #fff"></i>
+            </button>
+        </div>
+
+        <div class="author-info mt-5 p-4 bg-light rounded">
+            <div class="d-flex align-items-center">
+                <img src="{{ author_avatar }}" alt="著者の写真" class="img-fluid rounded-circle"
+                    style="width: 60px; height: 60px;">
+                <div class="ms-3">
+                    <a href="/authors/{{ author_id }}">
+                        <h4 class="mb-1">{{ author_name }}</h4>
+                    </a>
+                    <p class="mb-0">{{ author_bio }}</p>
+                </div>
+            </div>
+        </div>
+        {% if settings.giscusEnabled %}
+            {% with settings = settings %}
+                {% include "comment.html" %}
+            {% endwith %}
+        {% endif %}
+        <br>
+    </div>
+</div>
+</div>
+{% endblock %}
+
+{% block body_end %}
+<script src="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11.9.0/build/languages/javascript.min.js"></script>
+<script src="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11.9.0/build/languages/typescript.min.js"></script>
+<script src="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11.9.0/build/languages/css.min.js"></script>
+<script src="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11.9.0/build/languages/html.min.js"></script>
+<script src="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11.9.0/build/languages/python.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/luminous-lightbox@2.3.2/dist/luminous.min.js"></script>
+<script>
+    new LuminousGallery(document.querySelectorAll('.luminous'));
+    hljs.highlightAll();
+
+    function shareOnTwitter() {
+        const url = encodeURIComponent(window.location.href);
+        const title = encodeURIComponent(document.title);
+        window.open(`https://x.com/share?url=${url}&text=${title}`, 'X', 'width=400,height=520,noreferrer');
+    }
+
+    function shareOnFacebook() {
+        const url = encodeURIComponent(window.location.href);
+        window.open(`https://www.facebook.com/sharer/sharer.php?u=${url}`, 'Facebook', 'width=400,height=520,noreferrer');
+    }
+
+    function shareOnLinkedIn() {
+        const url = encodeURIComponent(window.location.href);
+        const title = encodeURIComponent(document.title);
+        window.open(`https://www.linkedin.com/shareArticle?mini=true&url=${url}&title=${title}`, 'LinkedIn', 'width=400,height=520,noreferrer');
+    }
+
+    function shareOnMisskey() {
+        const url = encodeURIComponent(window.location.href);
+        const title = encodeURIComponent(document.title);
+        window.open(`https://misskey-hub.net/share?text=${title}%20${url}`, 'Misskey Hub', 'width=400,height=520,noreferrer');
+    }
+
+    function shareOnMastodon() {
+        const url = encodeURIComponent(window.location.href);
+        const title = encodeURIComponent(document.title);
+        window.open(`https://mastodonshare.com/?text=${title}&url=${url}`, 'MastodonShare', 'width=400,height=520,noreferrer');
+    }
+
+    function shareOnThreads() {
+        const url = encodeURIComponent(window.location.href);
+        const title = encodeURIComponent(document.title);
+        window.open(`https://www.threads.net/intent/post?text=${title}%20${url}`, 'Threads', 'width=400,height=520,noreferrer');
+    }
+
+    function shareOnBsky() {
+        const url = encodeURIComponent(window.location.href);
+        const title = encodeURIComponent(document.title);
+        window.open(`https://bsky.app/intent/compose?text=${title}%20${url}`, 'bsky.app', 'width=400,height=520,noreferrer');
+    }
+
+    function shareOnLINE() {
+        const url = encodeURIComponent(window.location.href);
+        const title = encodeURIComponent(document.title);
+        window.open(`http://line.me/R/msg/text/?${title}%20${url}`, 'LINE', 'width=400,height=520,noreferrer');
+    }
+</script>
+{% endblock %}

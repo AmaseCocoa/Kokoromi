@@ -1,0 +1,40 @@
+{% extends "base.html" %}
+
+{% block title %}新しい記事を作成{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-8 offset-md-2">
+        <h2>新しい記事を作成</h2>
+        <form method="POST" action="{% if article %}/admin/articles/{{ article.id }}/edit{% else %}/admin/articles/create{% endif %}">
+            <div class="form-group">
+                <label for="title">タイトル</label>
+                <input type="text" class="form-control" id="title" name="title" {% if article %}value="{{ article.title }}"{% endif %} required>
+            </div>
+            <div class="form-group">
+                <label for="author_id">著者</label>
+                {% if article %}
+                    <select class="form-control" id="author_id" name="author_id" readonly>
+                {% else %}
+                    <select class="form-control" id="author_id" name="author_id" required>
+                {% endif %}
+                    <option value="{{ author.id }}">{{ author.name }}</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="content">内容</label>
+                <textarea id="content" name="content" class="form-control" rows="10">{% if article %}{{ article.content }}{% endif %}</textarea>
+            </div>
+            <button type="submit" class="btn btn-primary">保存</button>
+        </form>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/easymde/dist/easymde.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/easymde/dist/easymde.min.js"></script>
+    <script>
+        const easyMDE = new EasyMDE({element: document.getElementById('content')});
+    </script>
+{% endblock %}

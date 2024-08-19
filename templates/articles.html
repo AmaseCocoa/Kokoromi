@@ -1,0 +1,81 @@
+{% extends "base.html" %}
+
+{% block title %}ホーム{% endblock %}
+
+{% block head_prefix %}prefix="og: http://ogp.me/ns# fb: http://ogp.me/ns/fb# website: http://ogp.me/ns/website#"{% endblock %}
+
+{% block head %}
+<meta property="og:url" content="{{ page_url }}" />
+<meta property="og:type" content="website" />
+<meta property="og:title" content="ホーム" />
+<meta property="og:description" content="{{ settings.description }}" />
+<meta property="og:site_name" content="{{ settings.title }}" />
+<!-- <meta property="og:image" content=" サムネイル画像の URL" /> -->
+{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-8">
+        {% for article in articles %}
+        <div class="post mb-4">
+            <h2 class="post-title"><a href="/articles/{{ article.id }}">{{ article.title }}</a></h2>
+            <p class="post-meta">{{ article.date }} by <a href="/authors/{{ article.author.id }}">{{ article.author.displayName }}</a></p>
+            <p class="post-content">{{ article.excerpt }}</p>
+        </div>
+        {% endfor %}
+        <nav>
+            <ul class="pagination">
+                {% if prev_page %}
+                <li class="page-item">
+                    <a class="page-link" href="/?page={{ prev_page }}" aria-label="Previous">
+                        <span aria-hidden="true">&laquo;</span>
+                    </a>
+                </li>
+                {% endif %}
+                {% for page_num in range(1, num_pages + 1) %}
+                <li class="page-item {% if page_num == current_page %}active{% endif %}">
+                    <a class="page-link" href="/?page={{ page_num }}">{{ page_num }}</a>
+                </li>
+                {% endfor %}
+                {% if next_page %}
+                <li class="page-item">
+                    <a class="page-link" href="/?page={{ next_page }}" aria-label="Next">
+                        <span aria-hidden="true">&raquo;</span>
+                    </a>
+                </li>
+                {% endif %}
+            </ul>
+        </nav>
+    </div>
+    <div class="col-md-4">
+        <div class="sidebar p-4">
+            <!--<h3>サイドバー</h3>
+            <p>ここにサイドバーのコンテンツが入ります。</p>-->
+            <div class="sidebar-section">
+                <h4>最新の記事</h4>
+                <ul class="list-unstyled">
+                    {% for recent_article in recent_articles %}
+                        <li><a href="/articles/{{ recent_article.name }}">{{ recent_article.title }}</a></li>
+                    {% endfor %}
+                </ul>
+            </div>
+            <!--<div class="sidebar-section">
+                <h4>カテゴリ</h4>
+                <ul class="list-unstyled">
+                    <li><a href="#">カテゴリ1</a></li>
+                    <li><a href="#">カテゴリ2</a></li>
+                    <li><a href="#">カテゴリ3</a></li>
+                </ul>
+            </div>
+            <div class="sidebar-section">
+                <h4>タグ</h4>
+                <div class="tag-cloud">
+                    <a href="#" class="badge bg-secondary">タグ1</a>
+                    <a href="#" class="badge bg-secondary">タグ2</a>
+                    <a href="#" class="badge bg-secondary">タグ3</a>
+                </div>
+            </div>-->
+        </div>
+    </div>
+</div>
+{% endblock %}

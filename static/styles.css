@@ -1,0 +1,77 @@
+html, body {
+    height: 100%;
+    font-family: 'Helvetica Neue', Arial, sans-serif;
+}
+
+body {
+    display: flex;
+    flex-direction: column;
+}
+
+.container {
+    flex: 1;
+}
+
+.navbar-brand {
+    font-weight: bold;
+}
+
+.post {
+    background: var(--card-bg);
+    color: var(--text-color);
+    padding: 20px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    border-radius: 10px;
+}
+
+.post-title {
+    font-size: 2em;
+    margin-bottom: 20px;
+}
+
+.post-meta {
+    color: var(--meta-color);
+    font-size: 0.9em;
+    margin-bottom: 20px;
+}
+
+.post-image img {
+    width: 100%;
+    border-radius: 10px;
+    margin-bottom: 10px;
+}
+
+.post-image figcaption {
+    font-size: 0.9em;
+    color: var(--meta-color);
+    text-align: center;
+}
+
+.post-content {
+    font-size: 1.1em;
+    line-height: 1.6;
+}
+
+.author-info {
+    background: var(--author-bg);
+    color: var(--text-color);
+    padding: 20px;
+    border-radius: 10px;
+}
+
+.footer {
+    background: var(--footer-bg);
+    color: var(--text-color);
+    padding: 10px 0;
+    box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.1);
+}
+
+/* Light mode variables */
+body.light-mode {
+    --bg-color: #f8f9fa;
+    --text-color: #212529;
+    --card-bg: #ffffff;
+    --meta-color: #6c757d;
+    --author-bg: #ffffff;
+    --footer-bg: #ffffff;
+}

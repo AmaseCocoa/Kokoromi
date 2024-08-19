@@ -1,0 +1,33 @@
+{% extends "base.html" %}
+
+{% block title %}Kokoromiについて{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <h2>Kokoromiについて</h2>
+    <p><strong>由来:</strong> CMSを自作してみるという『試み』から。</p>
+    <p>Kokoromiはブログ用の簡単なコンテンツ管理システムです。現状は最小限の機能のみ搭載されています。</p>
+    
+    <h3>Features</h3>
+    <ul>
+        <li>Giscusを利用したコメント機能</li>
+        <li>複数ユーザーサポート</li>
+        <li>Markdownサポート</li>
+        <li>WYSIWYGエディタ搭載</li>
+        <li>データベースにはPostgreSQL, MySQL, SQLiteが利用可能 (正式にサポートされるのはMySQLのみです。出来るだけその他のデータベースのサポートにも尽力しますが、将来的な構造の変更によりその他のデータベースでは利用できなくなる可能性があります)</li>
+    </ul>
+
+    <h3>バージョン情報</h3>
+    <ul>
+        <li><strong>バージョン:</strong> 1.0.0</li>
+        <li><strong>リリース日:</strong> 2024年8月18日</li>
+    </ul>
+
+    <h3>開発者情報</h3>
+    <ul>
+        <li><strong>開発者:</strong> AmaseCocoa</li>
+    </ul>
+
+    <p>詳細な使い方については、<a href="/admin/docs">ドキュメント</a>をご参照ください。</p>
+</div>
+{% endblock %}
