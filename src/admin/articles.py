@@ -1,12 +1,12 @@
 import asyncio
 
-from fastapi import APIRouter, Form, HTTPException, Query, Request, Cookie
+from fastapi import APIRouter, Cookie, Form, HTTPException, Query, Request
 from fastapi.responses import HTMLResponse, RedirectResponse
 from fastapi.templating import Jinja2Templates
 from pydantic import BaseModel
 from python_aid.aidx import genAidx
 
-from prisma.models import Post, author
+from prsm.models import Post, author
 
 from .admin import get_current_user
 

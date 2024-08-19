@@ -3,7 +3,7 @@ import asyncio
 import bcrypt
 from python_aid.aidx import genAidx
 
-from prisma import Prisma
+from prsm import Prisma
 
 
 async def main(name: str, mail: str, displayName: str, description: str, password: str, isAdmin: bool=False) -> None:

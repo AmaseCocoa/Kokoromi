@@ -1,11 +1,11 @@
 from fastapi import APIRouter, Cookie, Request
 from fastapi.responses import HTMLResponse, RedirectResponse
 from fastapi.templating import Jinja2Templates
-from prisma.models import Token
 
+from prsm.models import Token
+
+from . import articles, author, login, settings
 from .admin import get_current_user
-
-from . import articles, login, settings, author
 
 app = APIRouter(prefix="/admin")
 app.include_router(articles.app)

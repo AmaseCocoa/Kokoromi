@@ -2,7 +2,8 @@ import datetime
 
 from fastapi import HTTPException, status
 from pydantic import BaseModel
-from prisma.models import author, Token
+
+from prsm.models import Token, author
 
 ALGORITHM = "HS256"
 ACCESS_TOKEN_EXPIRE_MINUTES = 1440

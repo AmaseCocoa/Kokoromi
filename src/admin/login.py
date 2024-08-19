@@ -1,18 +1,17 @@
 import datetime
-from datetime import timedelta
 import secrets
+from datetime import timedelta
 
 import bcrypt
 from fastapi import APIRouter, Form, Request, status
 from fastapi.responses import HTMLResponse, RedirectResponse
 from fastapi.templating import Jinja2Templates
-import jwt
 from pydantic import BaseModel
 
-from prisma.models import author
-from prisma.models import Token as token
+from prsm.models import Token as token
+from prsm.models import author
 
-from .admin import ALGORITHM, ACCESS_TOKEN_EXPIRE_MINUTES, SECRET_KEY, User
+from .admin import ACCESS_TOKEN_EXPIRE_MINUTES, User
 
 app = APIRouter()
 templates = Jinja2Templates(directory="templates/admin")

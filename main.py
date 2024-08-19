@@ -1,29 +1,28 @@
 import datetime
 import json
+import os
 import traceback
 from contextlib import asynccontextmanager
 
 import nest_asyncio
 import pymdownx.emoji
 import uvicorn
-from fastapi import FastAPI, HTTPException, Request, Cookie
+from fastapi import FastAPI, HTTPException, Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import HTMLResponse
 from fastapi.templating import Jinja2Templates
 from is_bot import Bots
 from markdown import markdown
-import os
 
-from prisma import Prisma
-from prisma.models import Post, cmsMeta
-from prisma.models import author as author_db
+from prsm import Prisma
+from prsm.models import Post, cmsMeta
+from prsm.models import author as author_db
 from src import meta as kokoromi
 from src.admin import app as admin_app
 from src.custom.preconnect import PreconnectMiddleware
 from src.custom.staticfiles import StaticFiles
 from src.extensions.autoref import LinkTargetBlankExtension
 from src.extensions.luminous import LuminousHTMLProcessor
-from src.admin import get_current_user
 
 prisma = Prisma(auto_register=True)
 DEBUG_MODE = os.getenv("DEBUG_MODE", "false").lower() == "true"
