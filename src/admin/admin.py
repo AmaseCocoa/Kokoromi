@@ -2,8 +2,7 @@ import datetime
 
 from fastapi import HTTPException, status
 from pydantic import BaseModel
-
-from prsm.models import Token, author
+from prsm.models import author, Token
 
 ALGORITHM = "HS256"
 ACCESS_TOKEN_EXPIRE_MINUTES = 1440

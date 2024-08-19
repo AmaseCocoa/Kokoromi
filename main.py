@@ -1,6 +1,5 @@
 import datetime
 import json
-import os
 import traceback
 from contextlib import asynccontextmanager
 
@@ -13,6 +12,7 @@ from fastapi.responses import HTMLResponse
 from fastapi.templating import Jinja2Templates
 from is_bot import Bots
 from markdown import markdown
+import os
 
 from prsm import Prisma
 from prsm.models import Post, cmsMeta
