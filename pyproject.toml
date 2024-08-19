@@ -1,0 +1,32 @@
+[project]
+name = "amsec-blog"
+version = "0.1.0"
+description = "Default template for PDM package"
+authors = [
+    {name = "AmaseCocoa", email = "amase.cocoa@gmail.com"},
+]
+dependencies = [
+    "fastapi>=0.112.1",
+    "uvicorn[standard]>=0.30.6",
+    "prisma>=0.15.0",
+    "bcrypt>=4.2.0",
+    "aiofiles>=24.1.0",
+    "aiohttp>=3.10.4",
+    "Brotli>=1.1.0",
+    "emoji>=2.12.1",
+    "is-bot>=0.3.0",
+    "lightningcss>=0.2.0",
+    "markdown>=3.7",
+    "lxml>=5.3.0",
+    "rjsmin>=1.2.2",
+    "pymdown-extensions>=10.9",
+    "python-aid>=0.2.1",
+    "nest-asyncio>=1.6.0",
+]
+requires-python = "==3.12.*"
+readme = "README.md"
+license = {text = "MIT"}
+
+
+[tool.pdm]
+distribution = false
