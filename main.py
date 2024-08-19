@@ -12,6 +12,7 @@ from fastapi.responses import HTMLResponse
 from fastapi.templating import Jinja2Templates
 from is_bot import Bots
 from markdown import markdown
+import os
 
 from prisma import Prisma
 from prisma.models import Post, cmsMeta
@@ -25,9 +26,7 @@ from src.extensions.luminous import LuminousHTMLProcessor
 from src.admin import get_current_user
 
 prisma = Prisma(auto_register=True)
-# DEBUG_MODE = os.getenv("DEBUG_MODE", "false").lower() == "true"
-DEBUG_MODE = True
-
+DEBUG_MODE = os.getenv("DEBUG_MODE", "false").lower() == "true"
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
