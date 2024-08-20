@@ -23,7 +23,7 @@ class LinkTargetBlankProcessor(Treeprocessor):
 class LinkTargetBlankExtension(Extension):
     def __init__(self, **kwargs):
         self.config = {
-            'allowed_domains': [['example.com'], 'List of allowed domains']
+            'allowed_domains': ['example.com']
         }
         super().__init__(**kwargs)
 
