@@ -7,7 +7,6 @@ authors = [
 ]
 dependencies = [
     "fastapi>=0.112.1",
-    "uvicorn[standard]>=0.30.6",
     "prisma>=0.15.0",
     "bcrypt>=4.2.0",
     "aiofiles>=24.1.0",
@@ -23,6 +22,7 @@ dependencies = [
     "python-aid>=0.2.1",
     "nest-asyncio>=1.6.0",
     "python-multipart>=0.0.9",
+    "uvicorn>=0.30.6",
 ]
 requires-python = "==3.12.*"
 readme = "README.md"
