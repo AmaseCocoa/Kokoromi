@@ -55,7 +55,7 @@
                 <h4>最新の記事</h4>
                 <ul class="list-unstyled">
                     {% for recent_article in recent_articles %}
-                        <li><a href="/articles/{{ recent_article.name }}">{{ recent_article.title }}</a></li>
+                        <li><a href="/articles/{{ recent_article.id }}">{{ recent_article.title }}</a></li>
                     {% endfor %}
                 </ul>
             </div>
