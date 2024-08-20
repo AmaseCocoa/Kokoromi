@@ -32,8 +32,11 @@ model cmsMeta {
   giscusCategoryId String?
   giscusThemeType String @default("preferred_color_scheme")
   ga4TrackingId String?
+  cfAnalyticsToken String?
   showViewCounts Boolean @default(false)
-  //... Add more fields as needed
+
+  turnstileSiteKey String @default("1x00000000000000000000AA")
+  turnstileSecretKey String @default("1x0000000000000000000000000000000AA")
 }
 
 model Post {
