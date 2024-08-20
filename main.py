@@ -4,12 +4,13 @@ import os
 import traceback
 from contextlib import asynccontextmanager
 
+import aiofiles
 import nest_asyncio
 import pymdownx.emoji
 import uvicorn
 from fastapi import FastAPI, HTTPException, Request
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.responses import HTMLResponse
+from fastapi.responses import HTMLResponse, PlainTextResponse
 from fastapi.templating import Jinja2Templates
 from is_bot import Bots
 from markdown import markdown
@@ -26,6 +27,7 @@ from src.extensions.luminous import LuminousHTMLProcessor
 
 prisma = Prisma(auto_register=True)
 DEBUG_MODE = os.getenv("DEBUG_MODE", "false").lower() == "true"
+
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
@@ -53,7 +55,7 @@ app.add_middleware(
         "avatars3.githubusercontent.com",
         "api.github.com",
         "cloudflareinsights.com",
-        "www.google-analytics.com "
+        "www.google-analytics.com ",
     ],
     allow_credentials=True,
     allow_methods=["*"],
@@ -112,6 +114,12 @@ if DEBUG_MODE == "true":
         raise HTTPException(status_code=500, detail="Internal Server Error")
 
 
+@app.get("/robots.txt")
+async def robots(request: Request):
+    async with aiofiles.open("./static/robots.txt", "r") as f:
+        return PlainTextResponse(await f.read(), status_code=200)
+
+
 @app.get("/articles/{articleId}", response_class=HTMLResponse)
 async def read_article(request: Request, articleId: str):
     ua = request.headers.get("user-agent")
@@ -124,7 +132,7 @@ async def read_article(request: Request, articleId: str):
                 "settings": await load_settings(),
                 "kokoromi": kokoromi,
             },
-            status_code=404
+            status_code=404,
         )
     author = await author_db.prisma().find_first(where={"id": article.authorId})
     if author is None:
@@ -135,7 +143,7 @@ async def read_article(request: Request, articleId: str):
                 "settings": await load_settings(),
                 "kokoromi": kokoromi,
             },
-            status_code=404
+            status_code=404,
         )
 
     html_content = markdown(
@@ -244,7 +252,7 @@ async def read_author(request: Request, author_id: str):
                 "settings": await load_settings(),
                 "kokoromi": kokoromi,
             },
-            status_code=404
+            status_code=404,
         )
 
     recent_articles = await Post.prisma().find_many(order={"createdAt": "desc"}, take=5)
