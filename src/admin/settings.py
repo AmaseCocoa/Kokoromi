@@ -2,7 +2,7 @@ from fastapi import APIRouter, Cookie, Form, Request
 from fastapi.responses import HTMLResponse, RedirectResponse
 from fastapi.templating import Jinja2Templates
 
-from prsm.models import cmsMeta
+from prisma.models import cmsMeta
 
 from .admin import get_current_user
 

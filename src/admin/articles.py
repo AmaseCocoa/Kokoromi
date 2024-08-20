@@ -6,7 +6,7 @@ from fastapi.templating import Jinja2Templates
 from pydantic import BaseModel
 from python_aid.aidx import genAidx
 
-from prsm.models import Post, author
+from prisma.models import Post, author
 
 from .admin import get_current_user
 

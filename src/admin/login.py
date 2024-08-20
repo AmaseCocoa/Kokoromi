@@ -8,8 +8,8 @@ from fastapi.responses import HTMLResponse, RedirectResponse
 from fastapi.templating import Jinja2Templates
 from pydantic import BaseModel
 
-from prsm.models import Token as token
-from prsm.models import author
+from prisma.models import Token as token
+from prisma.models import author
 
 from .admin import ACCESS_TOKEN_EXPIRE_MINUTES, User
 

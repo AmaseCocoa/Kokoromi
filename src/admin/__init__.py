@@ -2,7 +2,7 @@ from fastapi import APIRouter, Cookie, Request
 from fastapi.responses import HTMLResponse, RedirectResponse
 from fastapi.templating import Jinja2Templates
 
-from prsm.models import Token
+from prisma.models import Token
 
 from . import articles, author, login, settings
 from .admin import get_current_user

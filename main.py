@@ -1,5 +1,6 @@
 import datetime
 import json
+import os
 import traceback
 from contextlib import asynccontextmanager
 
@@ -12,11 +13,10 @@ from fastapi.responses import HTMLResponse
 from fastapi.templating import Jinja2Templates
 from is_bot import Bots
 from markdown import markdown
-import os
 
-from prsm import Prisma
-from prsm.models import Post, cmsMeta
-from prsm.models import author as author_db
+from prisma import Prisma
+from prisma.models import Post, cmsMeta
+from prisma.models import author as author_db
 from src import meta as kokoromi
 from src.admin import app as admin_app
 from src.custom.preconnect import PreconnectMiddleware
