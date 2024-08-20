@@ -12,6 +12,7 @@
         }
     </style>
     <meta name="robots" content="noindex">
+    <script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
 </head>
 <body class="bg-light">
     <div class="container">
@@ -31,6 +32,9 @@
                                 <label for="password" class="form-label">パスワード</label>
                                 <input type="password" class="form-control" id="password" name="password"{% if password %}value="{{ password }}"{% endif %} required>
                             </div>
+                            <div class="mb-3">
+                                <div class="cf-turnstile" data-sitekey="0x4AAAAAAAhojHFbbnJA8lXc" data-callback="turnstileVerified"></div>
+                            </div>
                             <div class="d-grid">
                                 <button type="submit" class="btn btn-primary">ログイン</button>
                             </div>
@@ -39,9 +43,15 @@
                 </div>
                 <br>
                 {% if error %}
-                <div class="alert alert-danger" role="alert">
-                    ユーザー名またはパスワードが違います。
-                </div>
+                    {% if isBot %}
+                        <div class="alert alert-danger" role="alert">
+                            検証失敗。あなたが人間であることを検証できませんでした。
+                        </div>
+                    {% else %}
+                        <div class="alert alert-danger" role="alert">
+                            ユーザー名またはパスワードが違います。
+                        </div>
+                    {% endif %}
                 {% endif %}
             </div>
         </div>
