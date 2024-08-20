@@ -56,6 +56,7 @@ async def update(
     enable_activitypub: bool = Form(False),
     adsense: str = Form(None),
     ga4TrackingId: str = Form(None),
+    cfAnalyticsToken: str = Form(None),
     showViewCounts: bool = Form(False),
 ):
     verify = await get_current_user(Authorization)
@@ -80,6 +81,7 @@ async def update(
                 "enableActivityPub": enable_activitypub,
                 "adsense": adsense,
                 "ga4TrackingId": ga4TrackingId,
+                "cfAnalyticsToken": cfAnalyticsToken,
                 "showViewCounts": showViewCounts
             }
         )
@@ -101,6 +103,7 @@ async def update(
                 "enableActivityPub": enable_activitypub,
                 "adsense": adsense,
                 "ga4TrackingId": ga4TrackingId,
+                "cfAnalyticsToken": cfAnalyticsToken,
                 "showViewCounts": showViewCounts
             },
         )
