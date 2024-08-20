@@ -10,6 +10,19 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/simple-icons-font@13.5.0/font/simple-icons.min.css">
     <link href="/static/styles.css" rel="stylesheet">
     <style>.twemoji {width: 1em;height: 1em;vertical-align: -0.1em;}</style>
+    {% if settings.cfAnalyticsToken and settings.cfAnalyticsToken != "None" %}
+        <!-- Cloudflare Web Analytics -->
+            <script defer src='https://static.cloudflareinsights.com/beacon.min.js' data-cf-beacon='{"token": "{{ settings.cfAnalyticsToken }}"}'></script>
+        <!-- End Cloudflare Web Analytics -->
+    {% elif settings.ga4TrackingId and settings.ga4TrackingId != "None" %}
+        <script async src="https://www.googletagmanager.com/gtag/js?id={{ settings.ga4TrackingId }}"></script>
+        <script>
+            window.dataLayer = window.dataLayer || [];
+            function gtag(){dataLayer.push(arguments);}
+            gtag('js', new Date());
+            gtag('config', '{{ settings.ga4TrackingId }}');
+        </script>
+    {% endif %}
     {% block head %}{% endblock %}
 </head>
 <body class="light-mode">
