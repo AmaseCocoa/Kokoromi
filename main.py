@@ -59,6 +59,7 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+nest_asyncio.apply()
 
 templates = Jinja2Templates(directory="templates")
 bots = Bots()
@@ -290,5 +291,4 @@ async def read_author(request: Request, author_id: str):
 
 
 if __name__ == "__main__":
-    nest_asyncio.apply()
     uvicorn.run(app, host="0.0.0.0", port=8000)
