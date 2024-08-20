@@ -187,6 +187,8 @@ async def read_article(request: Request, articleId: str):
 
 @app.get("/", response_class=HTMLResponse)
 @app.get("/articles", response_class=HTMLResponse)
+@app.head("/")
+@app.head("/articles")
 async def list_articles(request: Request):
     page = int(request.query_params.get("page", 1))
 
