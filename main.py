@@ -165,8 +165,6 @@ async def read_article(request: Request, articleId: str):
             where={"id": articleId}, data={"viewCount": article.viewCount + 1}
         )
     settings = await load_settings()
-    print(type(settings.ga4TrackingId))
-    print(settings.ga4TrackingId)
     return templates.TemplateResponse(
         request=request,
         name="article.html",
@@ -188,6 +186,7 @@ async def read_article(request: Request, articleId: str):
 
 
 @app.get("/", response_class=HTMLResponse)
+@app.get("/articles", response_class=HTMLResponse)
 async def list_articles(request: Request):
     page = int(request.query_params.get("page", 1))
 
