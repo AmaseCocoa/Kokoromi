@@ -52,6 +52,8 @@ app.add_middleware(
         "giscus.app",
         "avatars3.githubusercontent.com",
         "api.github.com",
+        "cloudflareinsights.com",
+        "www.google-analytics.com "
     ],
     allow_credentials=True,
     allow_methods=["*"],
@@ -147,7 +149,7 @@ async def read_article(request: Request, articleId: str):
             "tables",
             "admonition",
             "toc",
-            LinkTargetBlankExtension(allowed_domains=[]),
+            LinkTargetBlankExtension(allowed_domains=[request.base_url.hostname]),
             "pymdownx.emoji",
         ],
         extension_configs={
@@ -162,6 +164,9 @@ async def read_article(request: Request, articleId: str):
         await Post.prisma().update(
             where={"id": articleId}, data={"viewCount": article.viewCount + 1}
         )
+    settings = await load_settings()
+    print(type(settings.ga4TrackingId))
+    print(settings.ga4TrackingId)
     return templates.TemplateResponse(
         request=request,
         name="article.html",
@@ -177,7 +182,7 @@ async def read_article(request: Request, articleId: str):
             "content": html_content,
             "excerpt": article.content[:150] + "...",
             "kokoromi": kokoromi,
-            "settings": await load_settings(),
+            "settings": settings,
         },
     )
 
