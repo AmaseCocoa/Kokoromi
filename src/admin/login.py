@@ -2,6 +2,7 @@ import datetime
 import secrets
 from datetime import timedelta
 
+import aiohttp
 import bcrypt
 from fastapi import APIRouter, Form, Request, status
 from fastapi.responses import HTMLResponse, RedirectResponse
@@ -17,7 +18,6 @@ app = APIRouter()
 templates = Jinja2Templates(directory="templates/admin")
 
 
-
 class Token(BaseModel):
     access_token: str
     token_type: str
@@ -26,12 +26,14 @@ class Token(BaseModel):
 class TokenData(BaseModel):
     username: str | None = None
 
+
 class UserInDB(User):
     hashed_password: bytes
 
 
 def verify_password(plain_password, hashed_password):
     return bcrypt.checkpw(plain_password.encode("utf-8"), hashed_password)
+
 
 async def authenticate_user(username: str, password: str):
     user = await author.prisma().find_first(where={"name": username})
@@ -49,33 +51,64 @@ async def create_access_token(authorId: str, expires_delta: timedelta | None = N
         expire = datetime.datetime.now(datetime.UTC) + timedelta(minutes=1440)
     access_token = secrets.token_hex(16)
     await token.prisma().create(
-        data={
-            'token': access_token,
-            'authorId': authorId,
-            'expiresAt': expire
-        }
+        data={"token": access_token, "authorId": authorId, "expiresAt": expire}
     )
     return access_token
 
 
 @app.get("/login", response_class=HTMLResponse)
 async def login_page(request: Request):
-    return templates.TemplateResponse("login.html", {"request": request, "error": False, "username": None, "password": None})
+    return templates.TemplateResponse(
+        "login.html",
+        {"request": request, "error": False, "isBot": False, "username": None, "password": None},
+    )
 
 
 @app.post("/login")
-async def login(request: Request, username: str = Form(...), password: str = Form(...)):
+async def login(
+    request: Request,
+    username: str = Form(...),
+    password: str = Form(...),
+    turnstile_response: str = Form(...),
+):
+    cloudflare_secret_key = "0x4AAAAAAAhojERas1gc4rXtbh7NMeQPnpk"
+    async with aiohttp.ClientSession() as session:
+        async with session.post(
+            "https://challenges.cloudflare.com/turnstile/v0/siteverify",
+            data={
+                "secret": cloudflare_secret_key,
+                "response": turnstile_response,
+                "remoteip": request.client.host,
+            },
+        ) as resp:
+            resp = await resp.json()
+            if not resp["success"]:
+                return templates.TemplateResponse(
+                    "login.html",
+                    {
+                        "request": request,
+                        "error": True,
+                        "isBot": True,
+                        "username": username,
+                        "password": password,
+                    },
+                )
     user = await authenticate_user(username, password)
     if not user:
         return templates.TemplateResponse(
-            "login.html", {"request": request, "error": True, "username": username, "password": password}
+            "login.html",
+            {
+                "request": request,
+                "error": True,
+                "isBot": False,
+                "username": username,
+                "password": password,
+            },
         )
     access_token_expires = timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
     access_token = await create_access_token(
         authorId=user.id, expires_delta=access_token_expires
     )
     response = RedirectResponse(url="/admin", status_code=status.HTTP_303_SEE_OTHER)
-    response.set_cookie(
-        key="Authorization", value=f"{access_token}", httponly=True
-    )
+    response.set_cookie(key="Authorization", value=f"{access_token}", httponly=True)
     return response
