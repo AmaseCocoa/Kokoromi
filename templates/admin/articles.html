@@ -23,7 +23,7 @@
                 <td>{{ article.createdAt.strftime('%Y/%m/%d %H:%M') }}</td>
                 <td>
                     <a href="/admin/articles/{{ article.id }}/edit" class="btn btn-primary btn-sm">編集</a>
-    <!--                <a href="/admin/articles/{{ article.id }}/delete" class="btn btn-primary btn-sm">削除</a> -->
+                    <a href="/admin/articles/{{ article.id }}/delete" class="btn btn-primary btn-sm" onclick="deleteArticle('{{ article.id }}')">削除</a>
                 </td>
             </tr>
         {% endfor %}
@@ -53,5 +53,13 @@
     </ul>  
 </nav>
 <a href="/admin/articles/create" class="btn btn-primary btn-sm"><i class="bi bi-plus"></i>新規作成</a>
-
+<script>
+    function deleteArticle(articleId) {
+        if(window.confirm('記事を削除しますか？')){
+            if(window.confirm('本当に記事を削除しますか？この操作を元に戻すことはできません。')){
+                window.location.href = `/admin/articles/${articleId}/delete`;
+            } else {}
+        } else {}
+    }
+</script>
 {% endblock %}

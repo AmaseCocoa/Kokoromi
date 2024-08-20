@@ -94,17 +94,17 @@
                 <div class="form-group mb-3">
                     <label for="giscusRepoId">GiscusリポジトリId</label>
                     <input type="text" class="form-control" id="giscusRepoId" name="giscusRepoId"
-                        value="{{ settings.giscusRepoId }}">
+                        {% if settings.giscusRepoId %} value="{{ settings.giscusRepoId }}"{% endif %}>
                 </div>
                 <div class="form-group mb-3">
                     <label for="giscusCategoryName">Giscusカテゴリ名</label>
                     <input type="text" class="form-control" id="giscusCategoryName" name="giscusCategoryName"
-                        value="{{ settings.giscusCategoryName }}">
+                    {% if settings.giscusCategoryName %} value="{{ settings.giscusCategoryName }}"{% endif %}>
                 </div>
                 <div class="form-group mb-3">
                     <label for="giscusCategoryId">GiscusカテゴリId</label>
                     <input type="text" class="form-control" id="giscusCategoryId" name="giscusCategoryId"
-                        value="{{ settings.giscusCategoryId }}">
+                    {% if settings.giscusCategoryId %} value="{{ settings.giscusCategoryId }}"{% endif %}>
                 </div>
                 <div class="form-group mb-3">
                     <label for="giscusThemeType">Giscusテーマ</label>
@@ -160,12 +160,17 @@
                 </div>
                 <div class="form-group mb-3">
                     <label for="site_name">Adsense広告タグ</label>
-                    <input type="text" class="form-control" id="adsense" name="adsense" value="{{ settings.adsense }}">
+                    <input type="text" class="form-control" id="adsense" name="adsense"{% if settings.adsense %} value="{{ settings.adsense }}"{% endif %}>
                 </div>
                 <div class="form-group mb-3">
                     <label for="site_name">Google AnalyticsトラッキングID</label>
                     <input type="text" class="form-control" id="ga4TrackingId" name="ga4TrackingId"
-                        value="{{ settings.ga4TrackingId }}">
+                        {% if settings.ga4TrackingId %} value="{{ settings.ga4TrackingId }}"{% endif %}>
+                </div>
+                <div class="form-group mb-3">
+                    <label for="site_name">Cloudflare Web Analyticsトークン<br><small>Cloudflare Web AnalyticsとGA4が両方とも設定されている場合、こちらが優先されます。</small></label>
+                    <input type="text" class="form-control" id="cfAnalyticsToken" name="cfAnalyticsToken"
+                        {% if settings.cfAnalyticsToken %} value="{{ settings.cfAnalyticsToken }}"{% endif %}>
                 </div>
             </div>
         </div>
