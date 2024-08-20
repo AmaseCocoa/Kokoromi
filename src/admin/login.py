@@ -68,16 +68,19 @@ async def login_page(request: Request):
 async def login(
     request: Request,
     username: str = Form(...),
-    password: str = Form(...),
-    turnstile_response: str = Form(...),
+    password: str = Form(...)
 ):
+    form_data = await request.form()
+    turnstile_token = form_data.get("cf-turnstile-response")
+    print(form_data)
+    print(turnstile_token)
     cloudflare_secret_key = "0x4AAAAAAAhojERas1gc4rXtbh7NMeQPnpk"
     async with aiohttp.ClientSession() as session:
         async with session.post(
             "https://challenges.cloudflare.com/turnstile/v0/siteverify",
             data={
                 "secret": cloudflare_secret_key,
-                "response": turnstile_response,
+                "response": turnstile_token,
                 "remoteip": request.client.host,
             },
         ) as resp:
@@ -92,6 +95,7 @@ async def login(
                         "username": username,
                         "password": password,
                     },
+                    status_code=status.HTTP_403_FORBIDDEN,
                 )
     user = await authenticate_user(username, password)
     if not user:
