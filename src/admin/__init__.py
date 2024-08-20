@@ -18,7 +18,7 @@ templates = Jinja2Templates(directory="templates/admin")
 @app.get("/", response_class=HTMLResponse, name="admin_dashboard")
 async def admin_dashboard(request: Request, Authorization: str | None = Cookie(default=None)):
     if Authorization is None:
-        return RedirectResponse(url="/login", status_code=303)
+        return RedirectResponse(url="/admin/login", status_code=303)
     verify = await get_current_user(Authorization)
     if not verify:
         response = RedirectResponse(url="/admin/login", status_code=303)
