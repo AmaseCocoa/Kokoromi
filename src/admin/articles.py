@@ -132,6 +132,22 @@ async def create_article_form(
         {"request": request, "author": verify, "article": None},
     )
 
+@app.get("/{articleId}/delete", response_class=HTMLResponse, name="delete_article")
+async def delete_article(
+    request: Request, articleId: str, Authorization: str | None = Cookie(default=None)
+):
+    verify = await get_current_user(Authorization)
+    if not verify:
+        response = RedirectResponse(url="/admin/login", status_code=303)
+        response.delete_cookie(key="Authorization", httponly=True)
+    else:
+        await Post.prisma().delete(
+            where={
+                "id": articleId
+            }
+        )
+        response = RedirectResponse(url="/admin/articles", status_code=303)
+    return response
 
 @app.post("/create", response_class=HTMLResponse, name="create_article")
 async def create_article(
