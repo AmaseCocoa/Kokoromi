@@ -1,2 +1,2 @@
 .venv/
-prisma/schema.prisma
+prisma/dev.prisma
