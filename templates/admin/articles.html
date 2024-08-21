@@ -21,7 +21,7 @@
                 <td>{{ article.id }}</td>
                 <td>{{ article.title }}</td>
                 <td>{{ find_author(article.authorId).name }}</td>
-                <td>{{ article.createdAt.strftime('%Y/%m/%d %H:%M') }}</td>
+                <td>{{ article.createdAt | to_jst }}</td>
                 <td>{{ article.draft }}</td>
                 <td>
                     <a href="/admin/articles/{{ article.id }}/edit" class="btn btn-primary btn-sm">編集</a>
