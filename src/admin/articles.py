@@ -1,22 +1,43 @@
 import asyncio
+import datetime
 
 from fastapi import APIRouter, Cookie, Form, HTTPException, Query, Request
 from fastapi.responses import HTMLResponse, RedirectResponse
 from fastapi.templating import Jinja2Templates
 from pydantic import BaseModel
 from python_aid.aidx import genAidx
+import pymdownx.emoji
+from markdown import markdown
 
-from prisma.models import Post, author
+from prisma.models import Post, author, cmsMeta
 
 from .admin import get_current_user
+from ..extensions.autoref import LinkTargetBlankExtension
+from ..extensions.luminous import LuminousHTMLProcessor
+from .. import meta as kokoromi
+from ..func import convert_to_jst
 
 app = APIRouter(prefix="/articles")
 templates = Jinja2Templates(directory="templates/admin")
-
+templates.env.filters['to_jst'] = convert_to_jst
 
 def min_filter(a, b):
     return min(a, b)
 
+async def load_settings() -> cmsMeta:
+    setting = await cmsMeta.prisma().find_first(where={"id": 1})
+    if setting is None:
+        setting = await cmsMeta.prisma().create(
+            data={
+                "id": 1,
+                "title": "Sample Blog",
+                "description": "Sample Blog. Built with Kokoromi CMS.",
+                "hideKokoromiVersion": False,
+                "noindex": False,
+                "disallowAiLearning": False,
+            }
+        )
+    return setting
 
 templates.env.filters["min"] = min_filter
 
@@ -99,6 +120,7 @@ async def edit_article(
     title: str = Form(...),
     author_id: str = Form(...),
     content: str = Form(...),
+    draft: bool = Form(False),
     Authorization: str | None = Cookie(default=None),
 ):
     verify = await get_current_user(Authorization)
@@ -113,9 +135,14 @@ async def edit_article(
             "title": title,
             "content": content,
             "authorId": author_id,
+            "draft": draft,
+            "updatedAt": datetime.datetime.now(datetime.UTC)
         }
     )
-    return RedirectResponse(url=f"/articles/{articleId}", status_code=303)
+    if not draft:
+        return RedirectResponse(url=f"/articles/{articleId}", status_code=303)
+    else:
+        return RedirectResponse(url=f"/admin/articles/{articleId}/preview", status_code=303)
 
 
 @app.get("/create", response_class=HTMLResponse, name="create_article_form")
@@ -154,6 +181,7 @@ async def create_article(
     title: str = Form(...),
     author_id: str = Form(...),
     content: str = Form(...),
+    draft: bool = Form(False),
     Authorization: str | None = Cookie(default=None),
 ):
     verify = await get_current_user(Authorization)
@@ -161,6 +189,7 @@ async def create_article(
         response = RedirectResponse(url="/admin/login", status_code=303)
         response.delete_cookie(key="Authorization", httponly=True)
     article_id = genAidx()
+    now = datetime.datetime.now(datetime.UTC)
 
     await Post.prisma().create(
         data={
@@ -168,6 +197,86 @@ async def create_article(
             "title": title,
             "content": content,
             "authorId": author_id,
+            "draft": draft,
+            "createdAt": now,
+            "updatedAt": now
         }
     )
-    return RedirectResponse(url=f"/articles/{article_id}", status_code=303)
+    if not draft:
+        return RedirectResponse(url=f"/articles/{article_id}", status_code=303)
+    else:
+        return RedirectResponse(url=f"/admin/articles/{article_id}/preview", status_code=303)
+
+
+@app.get("/{articleId}/preview", response_class=HTMLResponse)
+async def preview(request: Request, articleId: str, Authorization: str | None = Cookie(default=None)):
+    verify = await get_current_user(Authorization)
+    if not verify:
+        response = RedirectResponse(url="/admin/login", status_code=303)
+        response.delete_cookie(key="Authorization", httponly=True)
+    article = await Post.prisma().find_first(where={"id": articleId, "draft": True})
+    if article is None:
+        return templates.TemplateResponse(
+            "404.html",
+            {
+                "request": request,
+                "settings": await load_settings(),
+                "kokoromi": kokoromi,
+            },
+            status_code=404,
+        )
+    _author = await author.prisma().find_first(where={"id": article.authorId})
+    if _author is None:
+        return templates.TemplateResponse(
+            "404.html",
+            {
+                "request": request,
+                "settings": await load_settings(),
+                "kokoromi": kokoromi,
+            },
+            status_code=404,
+        )
+
+    html_content = markdown(
+        article.content,
+        extensions=[
+            "abbr",
+            "attr_list",
+            "def_list",
+            "fenced_code",
+            "footnotes",
+            "md_in_html",
+            "tables",
+            "admonition",
+            "toc",
+            LinkTargetBlankExtension(allowed_domains=[request.base_url.hostname]),
+            "pymdownx.emoji",
+        ],
+        extension_configs={
+            "pymdownx.emoji": {
+                "emoji_index": pymdownx.emoji.twemoji,
+            }
+        },
+    )
+    processor = LuminousHTMLProcessor(html_content)
+    html_content = processor.process()
+    settings = await load_settings()
+    return templates.TemplateResponse(
+        request=request,
+        name="article.html",
+        context={
+            "page_url": str(request.url),
+            "year": datetime.date.today().year,
+            "article": article,
+            "author": _author,
+            "author_avatar": _author.icon,
+            "author_id": _author.id,
+            "author_name": _author.displayName,
+            "author_bio": _author.description,
+            "content": html_content,
+            "excerpt": article.content[:150] + "...",
+            "kokoromi": kokoromi,
+            "settings": settings,
+            "comment_disabled": True
+        },
+    )
