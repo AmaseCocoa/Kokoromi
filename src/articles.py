@@ -133,7 +133,7 @@ async def list_articles(request: Request):
         include={"author": True},
     )
 
-    recent_articles = await Post.prisma().find_many(take=5, where={"draft": False})
+    recent_articles = await Post.prisma().find_many(order={"createdAt": "desc"}, take=5, where={"draft": False})
 
     prev_page = page - 1 if page > 1 else None
     next_page = page + 1 if end_index < total_articles else None
