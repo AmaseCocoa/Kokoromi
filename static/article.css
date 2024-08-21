@@ -5,7 +5,7 @@
 }
 
 .toc ul {
-    padding-left: 20px; /* インデント */
+    padding-left: 20px;
     list-style: none;
 }
 
@@ -14,7 +14,7 @@
 }
 
 .toc a {
-    color: #007bff; /* Bootstrapのリンクカラー */
+    color: #007bff;
     text-decoration: none;
 }
 
