@@ -9,8 +9,8 @@ generator client {
 }
 
 datasource db {
-  provider = "sqlite" // mysql
-  url      = "file:./dev.db" // env("DATABASE_URL")
+  provider = "cockroachdb" // mysql
+  url      = "postgresql://kokoromi:cKgnltJhjEz-l95n6k_XLQ@amasec-blog-1444.jxf.cockroachlabs.cloud:26257/defaultdb?sslmode=verify-full" // env("DATABASE_URL")
 }
 
 model cmsMeta {
@@ -53,7 +53,7 @@ model Post {
 }
 
 model socialLink {
-  id    String @id @default(uuid())
+  id    String @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
   url   String
   icon String
   authorId String
@@ -76,7 +76,7 @@ model author {
 }
 
 model Token {
-  id        String      @id @default(uuid())
+  id        String      @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
   token     String   @unique
   authorId  String
   user      author   @relation(fields: [authorId], references: [id])
