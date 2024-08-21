@@ -1,29 +1,20 @@
-import datetime
-import json
 import os
 import traceback
 from contextlib import asynccontextmanager
 
 import aiofiles
 import nest_asyncio
-import pymdownx.emoji
 import uvicorn
 from fastapi import FastAPI, HTTPException, Request
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.responses import HTMLResponse, PlainTextResponse
+from fastapi.responses import PlainTextResponse
 from fastapi.templating import Jinja2Templates
-from is_bot import Bots
-from markdown import markdown
 
 from prisma import Prisma
-from prisma.models import Post, cmsMeta
-from prisma.models import author as author_db
 from src import meta as kokoromi
-from src.admin import app as admin_app
+from src import router
 from src.custom.preconnect import PreconnectMiddleware
 from src.custom.staticfiles import StaticFiles
-from src.extensions.autoref import LinkTargetBlankExtension
-from src.extensions.luminous import LuminousHTMLProcessor
 
 prisma = Prisma(auto_register=True)
 DEBUG_MODE = os.getenv("DEBUG_MODE", "false").lower() == "true"
@@ -44,7 +35,7 @@ app = FastAPI(
     version=kokoromi.version,
 )
 app.add_middleware(PreconnectMiddleware)
-app.include_router(admin_app)
+app.include_router(router)
 app.mount("/static", StaticFiles(directory="static"), name="static")
 app.add_middleware(
     CORSMiddleware,
@@ -64,33 +55,6 @@ app.add_middleware(
 nest_asyncio.apply()
 
 templates = Jinja2Templates(directory="templates")
-bots = Bots()
-
-ARTICLES_DIR = "articles"
-AUTHORS_FILE = "authors.json"
-ARTICLES_PER_PAGE = 5
-
-
-def load_authors() -> dict:
-    with open(AUTHORS_FILE, "r", encoding="utf-8") as file:
-        return json.load(file)
-
-
-async def load_settings() -> cmsMeta:
-    setting = await cmsMeta.prisma().find_first(where={"id": 1})
-    if setting is None:
-        setting = await cmsMeta.prisma().create(
-            data={
-                "id": 1,
-                "title": "Sample Blog",
-                "description": "Sample Blog. Built with Kokoromi CMS.",
-                "hideKokoromiVersion": False,
-                "noindex": False,
-                "disallowAiLearning": False,
-            }
-        )
-    return setting
-
 
 @app.exception_handler(HTTPException)
 async def internal_server_error(request: Request, exc: Exception):
@@ -118,185 +82,6 @@ if DEBUG_MODE == "true":
 async def robots(request: Request):
     async with aiofiles.open("./static/robots.txt", "r") as f:
         return PlainTextResponse(await f.read(), status_code=200)
-
-
-@app.get("/articles/{articleId}", response_class=HTMLResponse)
-async def read_article(request: Request, articleId: str):
-    ua = request.headers.get("user-agent")
-    article = await Post.prisma().find_first(where={"id": articleId})
-    if article is None:
-        return templates.TemplateResponse(
-            "404.html",
-            {
-                "request": request,
-                "settings": await load_settings(),
-                "kokoromi": kokoromi,
-            },
-            status_code=404,
-        )
-    author = await author_db.prisma().find_first(where={"id": article.authorId})
-    if author is None:
-        return templates.TemplateResponse(
-            "404.html",
-            {
-                "request": request,
-                "settings": await load_settings(),
-                "kokoromi": kokoromi,
-            },
-            status_code=404,
-        )
-
-    html_content = markdown(
-        article.content,
-        extensions=[
-            "abbr",
-            "attr_list",
-            "def_list",
-            "fenced_code",
-            "footnotes",
-            "md_in_html",
-            "tables",
-            "admonition",
-            "toc",
-            LinkTargetBlankExtension(allowed_domains=[request.base_url.hostname]),
-            "pymdownx.emoji",
-        ],
-        extension_configs={
-            "pymdownx.emoji": {
-                "emoji_index": pymdownx.emoji.twemoji,
-            }
-        },
-    )
-    processor = LuminousHTMLProcessor(html_content)
-    html_content = processor.process()
-    if ua and not bots.is_bot(ua):
-        await Post.prisma().update(
-            where={"id": articleId}, data={"viewCount": article.viewCount + 1}
-        )
-    settings = await load_settings()
-    return templates.TemplateResponse(
-        request=request,
-        name="article.html",
-        context={
-            "page_url": str(request.url),
-            "year": datetime.date.today().year,
-            "article": article,
-            "author": author,
-            "author_avatar": author.icon,
-            "author_id": author.id,
-            "author_name": author.displayName,
-            "author_bio": author.description,
-            "content": html_content,
-            "excerpt": article.content[:150] + "...",
-            "kokoromi": kokoromi,
-            "settings": settings,
-        },
-    )
-
-
-@app.get("/", response_class=HTMLResponse)
-@app.get("/articles", response_class=HTMLResponse)
-@app.head("/")
-@app.head("/articles")
-async def list_articles(request: Request):
-    page = int(request.query_params.get("page", 1))
-
-    total_articles = await Post.prisma().count()
-    num_pages = (total_articles + ARTICLES_PER_PAGE - 1) // ARTICLES_PER_PAGE
-    start_index = (page - 1) * ARTICLES_PER_PAGE
-    end_index = start_index + ARTICLES_PER_PAGE
-
-    num_pages = (total_articles + ARTICLES_PER_PAGE - 1) // ARTICLES_PER_PAGE
-    start_index = (page - 1) * ARTICLES_PER_PAGE
-    end_index = start_index + ARTICLES_PER_PAGE
-
-    articles = await Post.prisma().find_many(
-        order={"createdAt": "desc"},
-        skip=start_index,
-        take=ARTICLES_PER_PAGE,
-        include={"author": True},
-    )
-
-    recent_articles = await Post.prisma().find_many(take=5)
-
-    prev_page = page - 1 if page > 1 else None
-    next_page = page + 1 if end_index < total_articles else None
-
-    return templates.TemplateResponse(
-        request=request,
-        name="articles.html",
-        context={
-            "page_url": str(request.url),
-            "year": datetime.date.today().year,
-            "articles": articles,
-            "current_page": page,
-            "num_pages": num_pages,
-            "prev_page": prev_page,
-            "next_page": next_page,
-            "recent_articles": recent_articles,
-            "kokoromi": kokoromi,
-            "settings": await load_settings(),
-        },
-    )
-
-
-@app.get("/authors/{author_id}", response_class=HTMLResponse)
-async def read_author(request: Request, author_id: str):
-    page = int(request.query_params.get("page", 1))
-    author = await author_db.prisma().find_first(where={"id": author_id})
-    if not author:
-        return templates.TemplateResponse(
-            "404.html",
-            {
-                "request": request,
-                "settings": await load_settings(),
-                "kokoromi": kokoromi,
-            },
-            status_code=404,
-        )
-
-    recent_articles = await Post.prisma().find_many(order={"createdAt": "desc"}, take=5)
-
-    total_articles = await Post.prisma().count(
-        where={
-            "id": author_id,
-        }
-    )
-    num_pages = (total_articles + ARTICLES_PER_PAGE - 1) // ARTICLES_PER_PAGE
-    start_index = (page - 1) * ARTICLES_PER_PAGE
-    end_index = start_index + ARTICLES_PER_PAGE
-
-    articles = await Post.prisma().find_many(
-        where={
-            "authorId": author_id,
-        },
-        order={"createdAt": "desc"},
-        skip=start_index,
-        take=ARTICLES_PER_PAGE,
-        include={"author": True},
-    )
-
-    prev_page = page - 1 if page > 1 else None
-    next_page = page + 1 if end_index < total_articles else None
-
-    return templates.TemplateResponse(
-        request=request,
-        name="author.html",
-        context={
-            "page_url": str(request.url),
-            "year": datetime.date.today().year,
-            "author": author,
-            "author_icon": author.icon if author.icon else "",
-            "num_pages": num_pages,
-            "prev_page": prev_page,
-            "next_page": next_page,
-            "articles": articles,
-            "recent_articles": recent_articles,
-            "kokoromi": kokoromi,
-            "settings": await load_settings(),
-        },
-    )
-
 
 if __name__ == "__main__":
     uvicorn.run(app, host="0.0.0.0", port=8000)
