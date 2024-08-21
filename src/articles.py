@@ -87,7 +87,7 @@ async def read_article(request: Request, articleId: str):
         },
     )
     processor = LuminousHTMLProcessor(html_content)
-    html_content = processor.process()
+    html_content = await processor.process()
     if ua and not bots.is_bot(ua):
         await Post.prisma().update(
             where={"id": articleId}, data={"viewCount": article.viewCount + 1}
