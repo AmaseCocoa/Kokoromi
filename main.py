@@ -15,6 +15,7 @@ from src import meta as kokoromi
 from src import router
 from src.custom.preconnect import PreconnectMiddleware
 from src.custom.staticfiles import StaticFiles
+from src.custom.cache import CacheControlMiddleware
 
 prisma = Prisma(auto_register=True)
 DEBUG_MODE = os.getenv("DEBUG_MODE", "false").lower() == "true"
@@ -35,6 +36,7 @@ app = FastAPI(
     version=kokoromi.version,
 )
 app.add_middleware(PreconnectMiddleware)
+app.add_middleware(CacheControlMiddleware)
 app.include_router(router)
 app.mount("/static", StaticFiles(directory="static"), name="static")
 app.add_middleware(
