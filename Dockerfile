@@ -6,6 +6,9 @@ COPY ./requirements.txt /usr/src/app/requirements.txt
 RUN pip install --no-cache-dir -r requirements.txt
 
 COPY ./ /usr/src/app
+RUN cp prisma/prod.prisma prisma/schema.prisma
+RUN rm -f prisma/prod.prisma
+
 RUN prisma generate
 
 EXPOSE 8000
