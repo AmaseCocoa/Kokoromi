@@ -29,6 +29,9 @@ requires-python = "==3.12.*"
 readme = "README.md"
 license = {text = "MIT"}
 
-
 [tool.pdm]
 distribution = false
+
+[tool.pdm.scripts]
+"prod:migrate" = "pdm run prisma db push --schema=prisma/prod.prisma"
+"dev:migrate" = "pdm run prisma db push --schema=prisma/dev.prisma"
