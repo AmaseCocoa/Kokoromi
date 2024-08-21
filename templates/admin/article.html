@@ -11,13 +11,12 @@
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/luminous-lightbox@2.3.2/dist/luminous-basic.min.css">
 <link rel="stylesheet"
     href="/static/article.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/simple-icons-font@13.5.0/font/simple-icons.min.css">
 <meta property="og:url" content="" />
 <meta property="og:type" content="article" />
 <meta property="og:title" content="{{ article.title }}" />
 <meta property="og:description" content="{{ excerpt }}" />
 <meta property="og:site_name" content="{{ settings.title }}" />
-<meta name="creation_date" content="{{ article.createdAt.isoformat() }}">
-<meta name="date" content="{{ article.updatedAt.isoformat() }}">
 <!-- <meta property="og:image" content=" サムネイル画像の URL" /> -->
 <style>
     .post img.luminous-target {
@@ -57,39 +56,9 @@
                 </div>
             </div>
         </div>
-
         <article class="post">
             {{ content | safe }}
         </article>
-
-        <div class="share-buttons mt-5 text-center">
-            <h5>この記事をシェアする</h5>
-            <button class="btn" style="background-color:#000000;" onclick="shareOnTwitter()">
-                <i class="si si-x" style="color: #fff"></i>
-            </button>
-            <button class="btn" style="background-color:#1877F2;" onclick="shareOnFacebook()">
-                <i class="si si-facebook" style="color: #fff"></i>
-            </button>
-            <button class="btn" style="background-color:#0077B5;" onclick="shareOnLinkedIn()">
-                <i class="si si-linkedin" style="color: #fff"></i>
-            </button>
-            <button class="btn" style="background-color:#9FD709;" onclick="shareOnMisskey()">
-                <i class="si si-misskey" style="color: #fff"></i>
-            </button>
-            <button class="btn" style="background-color:#6364FF;" onclick="shareOnMastodon()">
-                <i class="si si-mastodon" style="color: #fff"></i>
-            </button>
-            <button class="btn" style="background-color:#0285FF;" onclick="shareOnBsky()">
-                <i class="si si-bluesky" style="color: #fff"></i>
-            </button>
-            <button class="btn" style="background-color:#000000;" onclick="shareOnBsky()">
-                <i class="si si-threads" style="color: #fff"></i>
-            </button>
-            <button class="btn" style="background-color:#00C300;" onclick="shareOnLINE()">
-                <i class="si si-line" style="color: #fff"></i>
-            </button>
-        </div>
-
         <div class="author-info mt-5 p-4 bg-light rounded">
             <div class="d-flex align-items-center">
                 <img src="{{ author_avatar }}" alt="著者の写真" class="img-fluid rounded-circle"
@@ -126,52 +95,5 @@
 <script>
     new LuminousGallery(document.querySelectorAll('.luminous'));
     hljs.highlightAll();
-
-    function shareOnTwitter() {
-        const url = encodeURIComponent(window.location.href);
-        const title = encodeURIComponent(document.title);
-        window.open(`https://x.com/share?url=${url}&text=${title}`, 'X', 'width=400,height=520,noreferrer');
-    }
-
-    function shareOnFacebook() {
-        const url = encodeURIComponent(window.location.href);
-        window.open(`https://www.facebook.com/sharer/sharer.php?u=${url}`, 'Facebook', 'width=400,height=520,noreferrer');
-    }
-
-    function shareOnLinkedIn() {
-        const url = encodeURIComponent(window.location.href);
-        const title = encodeURIComponent(document.title);
-        window.open(`https://www.linkedin.com/shareArticle?mini=true&url=${url}&title=${title}`, 'LinkedIn', 'width=400,height=520,noreferrer');
-    }
-
-    function shareOnMisskey() {
-        const url = encodeURIComponent(window.location.href);
-        const title = encodeURIComponent(document.title);
-        window.open(`https://misskey-hub.net/share?text=${title}%20${url}`, 'Misskey Hub', 'width=400,height=520,noreferrer');
-    }
-
-    function shareOnMastodon() {
-        const url = encodeURIComponent(window.location.href);
-        const title = encodeURIComponent(document.title);
-        window.open(`https://mastodonshare.com/?text=${title}&url=${url}`, 'MastodonShare', 'width=400,height=520,noreferrer');
-    }
-
-    function shareOnThreads() {
-        const url = encodeURIComponent(window.location.href);
-        const title = encodeURIComponent(document.title);
-        window.open(`https://www.threads.net/intent/post?text=${title}%20${url}`, 'Threads', 'width=400,height=520,noreferrer');
-    }
-
-    function shareOnBsky() {
-        const url = encodeURIComponent(window.location.href);
-        const title = encodeURIComponent(document.title);
-        window.open(`https://bsky.app/intent/compose?text=${title}%20${url}`, 'bsky.app', 'width=400,height=520,noreferrer');
-    }
-
-    function shareOnLINE() {
-        const url = encodeURIComponent(window.location.href);
-        const title = encodeURIComponent(document.title);
-        window.open(`http://line.me/R/msg/text/?${title}%20${url}`, 'LINE', 'width=400,height=520,noreferrer');
-    }
 </script>
 {% endblock %}

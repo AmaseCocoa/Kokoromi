@@ -25,6 +25,17 @@
                 <label for="content">内容</label>
                 <textarea id="content" name="content" class="form-control" rows="10">{% if article %}{{ article.content }}{% endif %}</textarea>
             </div>
+            <div class="form-group mb-3">
+                <div class="form-check">
+                    <input class="form-check-input" type="checkbox" id="draft"
+                        name="draft" {% if article %}{% if article.draft %}checked{% endif %}{% endif %}>
+                    <label class="form-check-label" for="draft">
+                        ドラフトとして設定
+                        <br>
+                        <small>有効の場合は通常のページに表示されなくなります。</small>
+                    </label>
+                </div>
+            </div>
             <button type="submit" class="btn btn-primary">保存</button>
         </form>
     </div>
@@ -35,6 +46,6 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/easymde/dist/easymde.min.css">
     <script src="https://cdn.jsdelivr.net/npm/easymde/dist/easymde.min.js"></script>
     <script>
-        const easyMDE = new EasyMDE({element: document.getElementById('content')});
+        const easyMDE = new EasyMDE({element: document.getElementById('content'), spellChecker: false});
     </script>
 {% endblock %}

@@ -23,6 +23,9 @@
             gtag('config', '{{ settings.ga4TrackingId }}');
         </script>
     {% endif %}
+    {% if settings.noindex %}
+        <meta name="robots" content="noindex">
+    {% endif %}
     {% block head %}{% endblock %}
 </head>
 <body class="light-mode">
@@ -33,11 +36,11 @@
                 <span class="navbar-toggler-icon"></span>
             </button>
             <div class="collapse navbar-collapse" id="navbarNav">
-                <ul class="navbar-nav ms-auto">
-                    <li class="nav-item">
-                        <a class="nav-link" href="/">ホーム</a>
-                    </li>
-                </ul>
+                <ul class="navbar-nav ms-auto"></ul>
+                <form class="d-flex" role="search" method="get" action="/search">
+                    <input class="form-control me-2" type="search" placeholder="Search" aria-label="search" name="text">
+                    <button class="btn btn-outline-success">Search</button>
+                </form>
             </div>
         </div>
     </nav>

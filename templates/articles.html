@@ -17,11 +17,16 @@
 <div class="row">
     <div class="col-md-8">
         {% for article in articles %}
-        <div class="post mb-4">
-            <h2 class="post-title"><a href="/articles/{{ article.id }}">{{ article.title }}</a></h2>
-            <p class="post-meta">{{ article.date }} by <a href="/authors/{{ article.author.id }}">{{ article.author.displayName }}</a></p>
-            <p class="post-content">{{ article.excerpt }}</p>
-        </div>
+            <div class="post mb-4">
+                <h2 class="post-title"><a href="/articles/{{ article.id }}">{{ article.title }}</a></h2>
+                <p class="post-meta">{{ article.date }} by <a href="/authors/{{ article.author.id }}">{{ article.author.displayName }}</a></p>
+                <p class="post-content">{{ article.content[:100] }}...</p>
+                <div class="d-flex justify-content-between">
+                    <div class="text-muted">
+                        <i class="bi bi-clock" style="margin-right: 5px;">{{ article.createdAt | to_jst }}</i>{% if article.updatedAt != article.createdAt %} <i class="bi bi-arrow-clockwise" style="margin-right: 5px;">{{ article.updatedAt | to_jst }}</i>{% endif %} {% if settings.showViewCounts %} <i class="bi bi-eye" style="margin-right: 5px;">{{ article.viewCount }}</i>{% endif %}
+                    </div>
+                </div>
+            </div>
         {% endfor %}
         <nav>
             <ul class="pagination">

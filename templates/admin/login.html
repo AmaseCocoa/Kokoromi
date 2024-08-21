@@ -25,8 +25,8 @@
                     <div class="card-body">
                         <form method="post" action="/admin/login">
                             <div class="mb-3">
-                                <label for="username" class="form-label">ユーザー名</label>
-                                <input type="text" class="form-control" id="username" name="username"{% if username %}value="{{ username }}"{% endif %} required>
+                                <label for="mail" class="form-label">メールアドレス</label>
+                                <input type="email" class="form-control" id="mail" name="mail"{% if mail %}value="{{ mail }}"{% endif %} required>
                             </div>
                             <div class="mb-3">
                                 <label for="password" class="form-label">パスワード</label>
