@@ -27,6 +27,8 @@ async def get_current_user(token: str) -> author:
     token: Token = await Token.prisma().find_first(where={
         'token': token
     })
+    if token is None:
+        raise credentials_exception
     now = datetime.datetime.now(datetime.UTC)
     if now > token.expiresAt:
         await Token.prisma().delete(
