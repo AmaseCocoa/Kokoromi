@@ -39,6 +39,7 @@ async def load_settings() -> cmsMeta:
     return setting
 
 @app.get("/articles/{articleId}", response_class=HTMLResponse)
+@app.head("/articles/{articleId}")
 async def read_article(request: Request, articleId: str):
     ua = request.headers.get("user-agent")
     article = await Post.prisma().find_first(where={"id": articleId, "draft": False})

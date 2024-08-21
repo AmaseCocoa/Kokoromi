@@ -79,6 +79,7 @@ if DEBUG_MODE == "true":
 
 
 @app.get("/robots.txt")
+@app.head("/robots.txt")
 async def robots(request: Request):
     async with aiofiles.open("./static/robots.txt", "r") as f:
         return PlainTextResponse(await f.read(), status_code=200)

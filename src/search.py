@@ -32,6 +32,7 @@ async def load_settings() -> cmsMeta:
     return setting
 
 @app.get("/search", response_class=HTMLResponse)
+@app.head("/search")
 async def search_articles(request: Request, text: str):
     page = int(request.query_params.get("page", 1))
 

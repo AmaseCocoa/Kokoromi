@@ -32,6 +32,7 @@ async def load_settings() -> cmsMeta:
     return setting
 
 @app.get("/{author_id}", response_class=HTMLResponse)
+@app.head("/{author_id}")
 async def read_author(request: Request, author_id: str):
     page = int(request.query_params.get("page", 1))
     author = await author_db.prisma().find_first(where={"id": author_id})
