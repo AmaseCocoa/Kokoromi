@@ -35,8 +35,8 @@ def verify_password(plain_password, hashed_password):
     return bcrypt.checkpw(plain_password.encode("utf-8"), hashed_password)
 
 
-async def authenticate_user(username: str, password: str):
-    user = await author.prisma().find_first(where={"name": username})
+async def authenticate_user(mail: str, password: str):
+    user = await author.prisma().find_first(where={"mail": mail})
     if not user:
         return False
     if not verify_password(password, user.password.encode("utf-8")):
@@ -60,20 +60,18 @@ async def create_access_token(authorId: str, expires_delta: timedelta | None = N
 async def login_page(request: Request):
     return templates.TemplateResponse(
         "login.html",
-        {"request": request, "error": False, "isBot": False, "username": None, "password": None},
+        {"request": request, "error": False, "isBot": False, "mail": None, "password": None},
     )
 
 
 @app.post("/login")
 async def login(
     request: Request,
-    username: str = Form(...),
+    mail: str = Form(...),
     password: str = Form(...)
 ):
     form_data = await request.form()
     turnstile_token = form_data.get("cf-turnstile-response")
-    print(form_data)
-    print(turnstile_token)
     cloudflare_secret_key = "0x4AAAAAAAhojERas1gc4rXtbh7NMeQPnpk"
     async with aiohttp.ClientSession() as session:
         async with session.post(
@@ -92,12 +90,12 @@ async def login(
                         "request": request,
                         "error": True,
                         "isBot": True,
-                        "username": username,
+                        "mail": mail,
                         "password": password,
                     },
                     status_code=status.HTTP_403_FORBIDDEN,
                 )
-    user = await authenticate_user(username, password)
+    user = await authenticate_user(mail, password)
     if not user:
         return templates.TemplateResponse(
             "login.html",
@@ -105,7 +103,7 @@ async def login(
                 "request": request,
                 "error": True,
                 "isBot": False,
-                "username": username,
+                "mail": mail,
                 "password": password,
             },
         )
