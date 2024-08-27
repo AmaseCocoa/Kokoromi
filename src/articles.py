@@ -82,6 +82,7 @@ async def read_article(request: Request, articleId: str):
             "pymdownx.tabbed",
             "pymdownx.tasklist",
             "pymdownx.smartsymbols",
+            "pymdownx.magiclink",
             LinkTargetBlankExtension(allowed_domains=[request.base_url.hostname]),
             "pymdownx.emoji",
         ],

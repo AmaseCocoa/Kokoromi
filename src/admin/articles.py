@@ -253,6 +253,7 @@ async def preview(request: Request, articleId: str, Authorization: str | None = 
             "pymdownx.tabbed",
             "pymdownx.tasklist",
             "pymdownx.smartsymbols",
+            "pymdownx.magiclink",
             LinkTargetBlankExtension(allowed_domains=[request.base_url.hostname]),
             "pymdownx.emoji",
         ],
