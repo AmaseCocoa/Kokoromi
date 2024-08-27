@@ -249,6 +249,10 @@ async def preview(request: Request, articleId: str, Authorization: str | None = 
             "tables",
             "admonition",
             "toc",
+            "pymdownx.tilde",
+            "pymdownx.tabbed",
+            "pymdownx.tasklist",
+            "pymdownx.smartsymbols",
             LinkTargetBlankExtension(allowed_domains=[request.base_url.hostname]),
             "pymdownx.emoji",
         ],
@@ -259,7 +263,7 @@ async def preview(request: Request, articleId: str, Authorization: str | None = 
         },
     )
     processor = LuminousHTMLProcessor(html_content)
-    html_content = processor.process()
+    html_content = await processor.process()
     settings = await load_settings()
     return templates.TemplateResponse(
         request=request,

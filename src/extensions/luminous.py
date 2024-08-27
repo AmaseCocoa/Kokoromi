@@ -2,7 +2,6 @@ import asyncio
 
 from lxml import etree
 
-
 class LuminousHTMLProcessor:
     def __init__(self, html_content, ignore_classes=["twemoji"]):
         self.html_content = html_content

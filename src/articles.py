@@ -12,6 +12,7 @@ from prisma.models import author as author_db
 from . import meta as kokoromi
 from .extensions.autoref import LinkTargetBlankExtension
 from .extensions.luminous import LuminousHTMLProcessor
+from .extensions.toc import autoToc
 from .func import convert_to_jst
 
 app = APIRouter()
@@ -65,7 +66,7 @@ async def read_article(request: Request, articleId: str):
             status_code=404,
         )
 
-    html_content = markdown(
+    content = markdown(
         article.content,
         extensions=[
             "abbr",
@@ -77,6 +78,10 @@ async def read_article(request: Request, articleId: str):
             "tables",
             "admonition",
             "toc",
+            "pymdownx.tilde",
+            "pymdownx.tabbed",
+            "pymdownx.tasklist",
+            "pymdownx.smartsymbols",
             LinkTargetBlankExtension(allowed_domains=[request.base_url.hostname]),
             "pymdownx.emoji",
         ],
@@ -86,8 +91,9 @@ async def read_article(request: Request, articleId: str):
             }
         },
     )
-    processor = LuminousHTMLProcessor(html_content)
-    html_content = await processor.process()
+    processor = LuminousHTMLProcessor(content)
+    content = await processor.process()
+#    content = await autoToc(content)
     if ua and not bots.is_bot(ua):
         await Post.prisma().update(
             where={"id": articleId}, data={"viewCount": article.viewCount + 1}
@@ -105,7 +111,7 @@ async def read_article(request: Request, articleId: str):
             "author_id": author.id,
             "author_name": author.displayName,
             "author_bio": author.description,
-            "content": html_content,
+            "content": content,
             "excerpt": article.content[:150] + "...",
             "kokoromi": kokoromi,
             "settings": settings,
