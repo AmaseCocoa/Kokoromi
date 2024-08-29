@@ -19,10 +19,12 @@ from ..func import convert_to_jst
 
 app = APIRouter(prefix="/articles")
 templates = Jinja2Templates(directory="templates/admin")
-templates.env.filters['to_jst'] = convert_to_jst
+templates.env.filters["to_jst"] = convert_to_jst
+
 
 def min_filter(a, b):
     return min(a, b)
+
 
 async def load_settings() -> cmsMeta:
     setting = await cmsMeta.prisma().find_first(where={"id": 1})
@@ -38,6 +40,7 @@ async def load_settings() -> cmsMeta:
             }
         )
     return setting
+
 
 templates.env.filters["min"] = min_filter
 
@@ -113,6 +116,7 @@ async def edit_article_form(
         {"request": request, "author": authors, "article": article},
     )
 
+
 @app.post("/{articleId}/edit", response_class=HTMLResponse, name="edit_article")
 async def edit_article(
     request: Request,
@@ -127,22 +131,52 @@ async def edit_article(
     if not verify:
         response = RedirectResponse(url="/admin/login", status_code=303)
         response.delete_cookie(key="Authorization", httponly=True)
-    await Post.prisma().update(
-        where={
-            "id": articleId
+    source = markdown(
+        content,
+        extensions=[
+            "abbr",
+            "attr_list",
+            "def_list",
+            "fenced_code",
+            "footnotes",
+            "md_in_html",
+            "tables",
+            "admonition",
+            "toc",
+            "pymdownx.tilde",
+            "pymdownx.tabbed",
+            "pymdownx.tasklist",
+            "pymdownx.smartsymbols",
+            "pymdownx.magiclink",
+            LinkTargetBlankExtension(allowed_domains=[request.base_url.hostname]),
+            "pymdownx.emoji",
+            "markdown_gfm_admonition",
+        ],
+        extension_configs={
+            "pymdownx.emoji": {
+                "emoji_index": pymdownx.emoji.twemoji,
+            }
         },
+    )
+    processor = LuminousHTMLProcessor(source)
+    source = await processor.process()
+    await Post.prisma().update(
+        where={"id": articleId},
         data={
             "title": title,
             "content": content,
+            "source": source,
             "authorId": author_id,
             "draft": draft,
-            "updatedAt": datetime.datetime.now(datetime.UTC)
-        }
+            "updatedAt": datetime.datetime.now(datetime.UTC),
+        },
     )
     if not draft:
         return RedirectResponse(url=f"/articles/{articleId}", status_code=303)
     else:
-        return RedirectResponse(url=f"/admin/articles/{articleId}/preview", status_code=303)
+        return RedirectResponse(
+            url=f"/admin/articles/{articleId}/preview", status_code=303
+        )
 
 
 @app.get("/create", response_class=HTMLResponse, name="create_article_form")
@@ -159,6 +193,7 @@ async def create_article_form(
         {"request": request, "author": verify, "article": None},
     )
 
+
 @app.get("/{articleId}/delete", response_class=HTMLResponse, name="delete_article")
 async def delete_article(
     request: Request, articleId: str, Authorization: str | None = Cookie(default=None)
@@ -168,16 +203,14 @@ async def delete_article(
         response = RedirectResponse(url="/admin/login", status_code=303)
         response.delete_cookie(key="Authorization", httponly=True)
     else:
-        await Post.prisma().delete(
-            where={
-                "id": articleId
-            }
-        )
+        await Post.prisma().delete(where={"id": articleId})
         response = RedirectResponse(url="/admin/articles", status_code=303)
     return response
 
+
 @app.post("/create", response_class=HTMLResponse, name="create_article")
 async def create_article(
+    request: Request,
     title: str = Form(...),
     author_id: str = Form(...),
     content: str = Form(...),
@@ -190,26 +223,59 @@ async def create_article(
         response.delete_cookie(key="Authorization", httponly=True)
     article_id = genAidx()
     now = datetime.datetime.now(datetime.UTC)
-
+    source = markdown(
+        content,
+        extensions=[
+            "abbr",
+            "attr_list",
+            "def_list",
+            "fenced_code",
+            "footnotes",
+            "md_in_html",
+            "tables",
+            "admonition",
+            "toc",
+            "pymdownx.tilde",
+            "pymdownx.tabbed",
+            "pymdownx.tasklist",
+            "pymdownx.smartsymbols",
+            "pymdownx.magiclink",
+            LinkTargetBlankExtension(allowed_domains=[request.base_url.hostname]),
+            "pymdownx.emoji",
+            "markdown_gfm_admonition",
+        ],
+        extension_configs={
+            "pymdownx.emoji": {
+                "emoji_index": pymdownx.emoji.twemoji,
+            }
+        },
+    )
+    processor = LuminousHTMLProcessor(source)
+    source = await processor.process()
     await Post.prisma().create(
         data={
             "id": article_id,
             "title": title,
             "content": content,
+            "source": source,
             "authorId": author_id,
             "draft": draft,
             "createdAt": now,
-            "updatedAt": now
+            "updatedAt": now,
         }
     )
     if not draft:
         return RedirectResponse(url=f"/articles/{article_id}", status_code=303)
     else:
-        return RedirectResponse(url=f"/admin/articles/{article_id}/preview", status_code=303)
+        return RedirectResponse(
+            url=f"/admin/articles/{article_id}/preview", status_code=303
+        )
 
 
 @app.get("/{articleId}/preview", response_class=HTMLResponse)
-async def preview(request: Request, articleId: str, Authorization: str | None = Cookie(default=None)):
+async def preview(
+    request: Request, articleId: str, Authorization: str | None = Cookie(default=None)
+):
     verify = await get_current_user(Authorization)
     if not verify:
         response = RedirectResponse(url="/admin/login", status_code=303)
@@ -237,34 +303,44 @@ async def preview(request: Request, articleId: str, Authorization: str | None = 
             status_code=404,
         )
 
-    html_content = markdown(
-        article.content,
-        extensions=[
-            "abbr",
-            "attr_list",
-            "def_list",
-            "fenced_code",
-            "footnotes",
-            "md_in_html",
-            "tables",
-            "admonition",
-            "toc",
-            "pymdownx.tilde",
-            "pymdownx.tabbed",
-            "pymdownx.tasklist",
-            "pymdownx.smartsymbols",
-            "pymdownx.magiclink",
-            LinkTargetBlankExtension(allowed_domains=[request.base_url.hostname]),
-            "pymdownx.emoji",
-        ],
-        extension_configs={
-            "pymdownx.emoji": {
-                "emoji_index": pymdownx.emoji.twemoji,
+    if article.source is None:
+        content = markdown(
+            article.content,
+            extensions=[
+                "abbr",
+                "attr_list",
+                "def_list",
+                "fenced_code",
+                "footnotes",
+                "md_in_html",
+                "tables",
+                "admonition",
+                "toc",
+                "pymdownx.tilde",
+                "pymdownx.tabbed",
+                "pymdownx.tasklist",
+                "pymdownx.smartsymbols",
+                "pymdownx.magiclink",
+                LinkTargetBlankExtension(allowed_domains=[request.base_url.hostname]),
+                "pymdownx.emoji", 
+                "markdown_gfm_admonition"
+            ],
+            extension_configs={
+                "pymdownx.emoji": {
+                    "emoji_index": pymdownx.emoji.twemoji,
+                }
+            },
+        )
+        processor = LuminousHTMLProcessor(content)
+        content = await processor.process()
+        await Post.prisma().update(
+            where={"id": article.id},
+            data={
+                "source": content
             }
-        },
-    )
-    processor = LuminousHTMLProcessor(html_content)
-    html_content = await processor.process()
+        )
+    else:
+        content = article.source
     settings = await load_settings()
     return templates.TemplateResponse(
         request=request,
@@ -278,10 +354,10 @@ async def preview(request: Request, articleId: str, Authorization: str | None = 
             "author_id": _author.id,
             "author_name": _author.displayName,
             "author_bio": _author.description,
-            "content": html_content,
+            "content": content,
             "excerpt": article.content[:150] + "...",
             "kokoromi": kokoromi,
             "settings": settings,
-            "comment_disabled": True
+            "comment_disabled": True,
         },
     )

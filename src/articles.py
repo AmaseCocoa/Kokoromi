@@ -66,35 +66,44 @@ async def read_article(request: Request, articleId: str):
             status_code=404,
         )
 
-    content = markdown(
-        article.content,
-        extensions=[
-            "abbr",
-            "attr_list",
-            "def_list",
-            "fenced_code",
-            "footnotes",
-            "md_in_html",
-            "tables",
-            "admonition",
-            "toc",
-            "pymdownx.tilde",
-            "pymdownx.tabbed",
-            "pymdownx.tasklist",
-            "pymdownx.smartsymbols",
-            "pymdownx.magiclink",
-            LinkTargetBlankExtension(allowed_domains=[request.base_url.hostname]),
-            "pymdownx.emoji", 
-            "markdown_gfm_admonition"
-        ],
-        extension_configs={
-            "pymdownx.emoji": {
-                "emoji_index": pymdownx.emoji.twemoji,
+    if article.source is None:
+        content = markdown(
+            article.content,
+            extensions=[
+                "abbr",
+                "attr_list",
+                "def_list",
+                "fenced_code",
+                "footnotes",
+                "md_in_html",
+                "tables",
+                "admonition",
+                "toc",
+                "pymdownx.tilde",
+                "pymdownx.tabbed",
+                "pymdownx.tasklist",
+                "pymdownx.smartsymbols",
+                "pymdownx.magiclink",
+                LinkTargetBlankExtension(allowed_domains=[request.base_url.hostname]),
+                "pymdownx.emoji", 
+                "markdown_gfm_admonition"
+            ],
+            extension_configs={
+                "pymdownx.emoji": {
+                    "emoji_index": pymdownx.emoji.twemoji,
+                }
+            },
+        )
+        processor = LuminousHTMLProcessor(content)
+        content = await processor.process()
+        await Post.prisma().update(
+            where={"id": article.id},
+            data={
+                "source": content
             }
-        },
-    )
-    processor = LuminousHTMLProcessor(content)
-    content = await processor.process()
+        )
+    else:
+        content = article.source
 #    content = await autoToc(content)
     if ua and not bots.is_bot(ua):
         await Post.prisma().update(

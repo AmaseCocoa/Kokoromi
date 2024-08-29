@@ -43,6 +43,7 @@ model Post {
   id          String    @id
   title       String
   content     String
+  source      String?
   createdAt   DateTime @default(now())
   updatedAt   DateTime
   authorId    String
@@ -73,6 +74,9 @@ model author {
   password String
   posts Post[]
   isAdmin Boolean @default(false)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @default(now())
 }
 
 model Token {
