@@ -35,3 +35,82 @@
     outline: none;
     box-shadow: none;
 }
+
+.admonition {
+    border-left: 4px solid;
+    padding: 1rem;
+    margin: 1rem 0;
+    border-radius: 0.25rem;
+}
+
+.admonition.note {
+    border-color: #17a2b8;
+    background-color: #d1ecf1;
+    color: #0c5460;
+}
+
+.admonition.tip {
+    border-color: #28a745;
+    background-color: #d4edda;
+    color: #155724;
+}
+
+.admonition.important {
+    border-color: #ffc107;
+    background-color: #fff3cd;
+    color: #856404;
+}
+
+.admonition.warning {
+    border-color: #dc3545;
+    background-color: #f8d7da;
+    color: #721c24;
+}
+
+.admonition.caution {
+    border-color: #fd7e14;
+    background-color: #fff5f0;
+    color: #856404;
+}
+
+.admonition-title {
+    font-weight: bold;
+    margin-bottom: 0.5rem;
+    display: flex;
+    align-items: center;
+}
+
+.admonition.note .admonition-title::before {
+    content: "\F431";
+    margin-right: 0.3rem;
+    font-family: "bootstrap-icons";
+    font-weight: 900;
+}
+
+.admonition.tip .admonition-title::before {
+    content: "\F46B";
+    margin-right: 0.3rem;
+    font-family: "bootstrap-icons";
+    font-weight: 900;
+}
+
+.admonition.important .admonition-title::before {
+    content: "\F24D";
+    margin-right: 0.3rem;
+    font-family: "bootstrap-icons";
+    font-weight: 900;
+}
+
+.admonition.warning .admonition-title::before {
+    content: "\F33B";
+    margin-right: 0.3rem;
+    font-family: "bootstrap-icons";
+    font-weight: 900;
+}
+
+.admonition.caution .admonition-title::before {
+    content: "\F337"; /* bootstrap-icons exclamation icon */
+    font-family: "bootstrap-icons";
+    font-weight: 900;
+}
+

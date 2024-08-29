@@ -84,7 +84,8 @@ async def read_article(request: Request, articleId: str):
             "pymdownx.smartsymbols",
             "pymdownx.magiclink",
             LinkTargetBlankExtension(allowed_domains=[request.base_url.hostname]),
-            "pymdownx.emoji",
+            "pymdownx.emoji", 
+            "markdown_gfm_admonition"
         ],
         extension_configs={
             "pymdownx.emoji": {

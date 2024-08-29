@@ -5,7 +5,7 @@
 groups = ["default"]
 strategy = ["inherit_metadata"]
 lock_version = "4.5.0"
-content_hash = "sha256:97fdbd3e54c4e67e68802010d20ff3d3dde6896b7f4e8a44e5f0254b670f7202"
+content_hash = "sha256:662d7742e9c6033eb1af52b28b3ab791528c9c9958724c2e388cf01edaada0a1"
 
 [[metadata.targets]]
 requires_python = "==3.12.*"
@@ -521,6 +521,20 @@ dependencies = [
 files = [
     {file = "Markdown-3.7-py3-none-any.whl", hash = "sha256:7eb6df5690b81a1d7942992c97fad2938e956e79df20cbc6186e9c3a77b1c803"},
     {file = "markdown-3.7.tar.gz", hash = "sha256:2ae2471477cfd02dbbf038d5d9bc226d40def84b4fe2986e49b59b6b472bbed2"},
+]
+
+[[package]]
+name = "markdown-gfm-admonition"
+version = "0.1.1"
+requires_python = ">=3.8"
+summary = "GFM admonition syntax for Python Markdown"
+groups = ["default"]
+dependencies = [
+    "Markdown>=3.2",
+]
+files = [
+    {file = "markdown_gfm_admonition-0.1.1-py3-none-any.whl", hash = "sha256:f6626287a34adf0cdc44f953086fcb9aaaf0cb698f01f3a36b46758c30f7d701"},
+    {file = "markdown_gfm_admonition-0.1.1.tar.gz", hash = "sha256:a0cb00d183b2be4a4bfc355a74500ddb9818c7ce8d9ac99a63ba7f689866c13d"},
 ]
 
 [[package]]
