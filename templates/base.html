@@ -22,6 +22,9 @@
             gtag('config', '{{ settings.ga4TrackingId }}');
         </script>
     {% endif %}
+    {% if settings.disallowAiLearning %}
+        <meta name="robots" content="noai, noimageai">
+    {% endif %}
     {% if settings.noindex %}
         <meta name="robots" content="noindex">
     {% endif %}
