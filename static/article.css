@@ -109,7 +109,8 @@
 }
 
 .admonition.caution .admonition-title::before {
-    content: "\F337"; /* bootstrap-icons exclamation icon */
+    content: "\F337";
+    margin-right: 0.3rem;
     font-family: "bootstrap-icons";
     font-weight: 900;
 }
