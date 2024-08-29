@@ -24,6 +24,3 @@ async def main(name: str, mail: str, displayName: str, description: str, passwor
     await prisma.disconnect()
 
 
-# asyncio.run(main(name="AmaseCocoa", mail="amase.cocoa@gmail.com", displayName="甘瀬ここあ", description="テスト用", password="N%CP#vG2SaUskhTna%@Ut^@QhsEbyQpQ"))
-salt = bcrypt.gensalt(rounds=10, prefix=b"2a")
-print(bcrypt.hashpw("N%CP#vG2SaUskhTna%@Ut^@QhsEbyQpQ".encode("utf-8"), salt).decode("utf-8"))
