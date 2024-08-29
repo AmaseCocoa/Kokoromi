@@ -5,7 +5,7 @@ from contextlib import asynccontextmanager
 import aiofiles
 import nest_asyncio
 import uvicorn
-from fastapi import FastAPI, HTTPException, Request
+from fastapi import FastAPI, HTTPException, Request, Response
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import PlainTextResponse
 from fastapi.templating import Jinja2Templates
@@ -85,6 +85,39 @@ if DEBUG_MODE == "true":
 async def robots(request: Request):
     async with aiofiles.open("./static/robots.txt", "r") as f:
         return PlainTextResponse(await f.read(), status_code=200)
+
+@app.get("/sitemap.xml", response_class=Response)
+async def sitemap_xml():
+    articles = await prisma.post.find_many()
+    authors = await prisma.author.find_many()
+    
+    sitemap = '<?xml version="1.0" encoding="UTF-8"?>'
+    sitemap += '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">'
+    
+    static_urls = [
+        {'loc': 'https://blog.amase.xyz/'},
+        {'loc': 'https://blog.amase.xyz/articles'},
+        {'loc': 'https://blog.amase.xyz/search'},
+    ]
+    
+    dynamic_urls = [
+        {'loc': f'https://blog.amase.xyz/articles/{article.id}', 'lastmod': article.updatedAt.strftime('%Y-%m-%dT%H:%M:%S%z')}
+        for article in articles
+    ] + [
+        {'loc': f'https://blog.amase.xyz/authors/{author.id}', 'lastmod': author.updatedAt.strftime('%Y-%m-%dT%H:%M:%S%z')}
+        for author in authors
+    ]
+    
+    for url in static_urls + dynamic_urls:
+        sitemap += '<url>'
+        sitemap += f"<loc>{url['loc']}</loc>"
+        if 'lastmod' in url:
+            sitemap += f"<lastmod>{url['lastmod']}</lastmod>"
+        sitemap += '</url>'
+    
+    sitemap += '</urlset>'
+    
+    return Response(content=sitemap, media_type="application/xml")
 
 if __name__ == "__main__":
     uvicorn.run(app, host="0.0.0.0", port=8000)
